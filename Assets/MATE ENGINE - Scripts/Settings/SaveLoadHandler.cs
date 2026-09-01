@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using System;
+using System.Net;
+using System.Text;
+using UnityEngine.Networking;
 
 public class SaveLoadHandler : MonoBehaviour
 {
@@ -242,6 +245,14 @@ public class SaveLoadHandler : MonoBehaviour
         public int llmMaxMessages = 20;
         public int llmMaxTokens = 1024;
 
+        // SuperClaw daemon handshake: when enabled, the program pushes a handshake
+        // payload (program name, hostname, loaded model info) to the daemon at
+        // startup and whenever the model/endpoint configuration changes.
+        // daemonUrl is the daemon base address, e.g. "http://192.168.1.50:8080";
+        // the handshake is POSTed to {daemonUrl}/handshake.
+        public bool daemonEnabled = false;
+        public string daemonUrl = "";
+
         // GPT-SoVITS TTS settings
         public string ttsApiUrl = "http://100.75.53.37:9880/tts";
         public string ttsRefAudioPath = "/media/zichen/E/workspace/GPT-SoVITS/参考音频/yanami1.mp3";
@@ -310,6 +321,100 @@ public class SaveLoadHandler : MonoBehaviour
             data.settingsVersion = 1;
             SaveToDisk();
         }
+        if (data.settingsVersion < 2)
+        {
+            data.settingsVersion = 2;
+            SaveToDisk();
+        }
+    }
+
+    // ── SuperClaw daemon handshake ────────────────────────────────────────────
+    // Reports program name, hostname and loaded-model info to a daemon on the
+    // LAN (e.g. running on the SuperClaw box). Only active when daemonEnabled is
+    // true and daemonUrl is set. Pushes on startup and whenever the model /
+    // endpoint / config signature changes; retries until the daemon acks.
+    private const float DaemonPollInterval = 2f;
+    private float daemonPollTimer;
+    private string lastHandshakeSignature;
+
+    void Update()
+    {
+        if (data == null) return;
+        daemonPollTimer -= Time.unscaledDeltaTime;
+        if (daemonPollTimer > 0f) return;
+        daemonPollTimer = DaemonPollInterval;
+        TryPushDaemonHandshake();
+    }
+
+    string DaemonHandshakeSignature()
+    {
+        return (data.daemonEnabled ? "1" : "0") + "|" + data.daemonUrl + "|" + data.llmModel + "|" + data.llmBaseUrl;
+    }
+
+    void TryPushDaemonHandshake()
+    {
+        if (!data.daemonEnabled || string.IsNullOrEmpty(data.daemonUrl))
+        {
+            lastHandshakeSignature = null;
+            return;
+        }
+
+        string sig = DaemonHandshakeSignature();
+        if (sig == lastHandshakeSignature) return;
+        StartCoroutine(SendDaemonHandshakeCoroutine(sig));
+    }
+
+    System.Collections.IEnumerator SendDaemonHandshakeCoroutine(string signature)
+    {
+        var model = new Dictionary<string, object>
+        {
+            ["name"] = string.IsNullOrEmpty(data.llmModel) ? "unknown" : data.llmModel,
+            ["endpoint"] = data.llmBaseUrl,
+            ["maxTokens"] = data.llmMaxTokens
+        };
+
+        var payload = new Dictionary<string, object>
+        {
+            ["protocol"] = "mate-engine.daemon.handshake",
+            ["protocolVersion"] = 1,
+            ["programName"] = string.IsNullOrEmpty(Application.productName) ? "Mate Engine" : Application.productName,
+            ["hostname"] = GetHostname(),
+            ["model"] = model,
+            ["sentAtUtc"] = DateTime.UtcNow.ToString("o")
+        };
+
+        string json = JsonConvert.SerializeObject(payload);
+        string url = data.daemonUrl.TrimEnd('/') + "/handshake";
+
+        using (var req = new UnityWebRequest(url, "POST"))
+        {
+            byte[] body = Encoding.UTF8.GetBytes(json);
+            req.uploadHandler = new UploadHandlerRaw(body);
+            req.downloadHandler = new DownloadHandlerBuffer();
+            req.SetRequestHeader("Content-Type", "application/json");
+            req.timeout = 3;
+
+            yield return req.SendWebRequest();
+
+            if (req.result == UnityWebRequest.Result.Success &&
+                req.responseCode >= 200 && req.responseCode < 300)
+            {
+                lastHandshakeSignature = signature;
+                Debug.Log("[SaveLoadHandler] Daemon handshake sent: " + json);
+            }
+            else
+            {
+                // Retry on the next poll; signature is only remembered on success.
+                Debug.LogWarning("[SaveLoadHandler] Daemon handshake failed (" + req.responseCode + " " + req.error + "), will retry.");
+            }
+        }
+    }
+
+    static string GetHostname()
+    {
+        try { return Dns.GetHostName(); } catch { }
+        try { return Environment.MachineName; } catch { }
+        return "unknown";
     }
 
     public static void SyncAllowedAppsToAllAvatars()
