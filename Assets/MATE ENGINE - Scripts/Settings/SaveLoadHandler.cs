@@ -497,8 +497,13 @@ public class SaveLoadHandler : MonoBehaviour
         var tts = UnityEngine.Object.FindAnyObjectByType<SoVITSTTSHandler>();
         if (tts == null)
         {
-            Debug.LogWarning("[SaveLoadHandler] Daemon speak ignored: no SoVITSTTSHandler in scene.");
-            return false;
+            // Fallback: create a handler so the command still works even if the
+            // scene's component is inactive/missing at runtime. SoVITSTTSHandler.Awake
+            // adds an AudioSource, and DontDestroyOnLoad keeps it alive across scenes.
+            Debug.LogWarning("[SaveLoadHandler] SoVITSTTSHandler not found in scene; creating one.");
+            var go = new GameObject("SuperClawTTS");
+            tts = go.AddComponent<SoVITSTTSHandler>();
+            UnityEngine.Object.DontDestroyOnLoad(go);
         }
         Debug.Log("[SaveLoadHandler] Daemon speak: " + text);
         tts.Speak(text);
