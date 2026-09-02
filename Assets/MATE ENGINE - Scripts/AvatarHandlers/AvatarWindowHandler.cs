@@ -452,40 +452,38 @@ public class AvatarWindowHandler : MonoBehaviour
     float _rawDragOffsetX, _rawDragOffsetY;
     bool _rawDragGrabbed;
     float _rawDragLogTime = -1f;
-    int _rawDragBaseX, _rawDragBaseY;
-    int _rawGrabX, _rawGrabY;
 
-    void HandleRawDrag()
+void HandleRawDrag()
     {
 #if UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
         if (!controller.isDragging) { _rawDragGrabbed = false; return; }
 
         if (!_rawDragGrabbed)
         {
-            // First frame of the drag: remember window pos + grab point, and
-            // the cursor delta starts at zero (relative drag).
+            // First frame of the drag: remember the grab offset (where the
+            // cursor is relative to the window's top-left), not the absolute
+            // window pos. Each subsequent frame the window is placed so that
+            // this offset stays under the cursor (drag-to-cursor).
             if (MacWindowHelper.TryGetWindowRect(out RectInt w) &&
                 MacWindowHelper.TryGetCursorPosition(out Vector2Int c))
             {
-                _rawDragBaseX = w.x; _rawDragBaseY = w.y;
-                _rawGrabX = c.x; _rawGrabY = c.y;
+                _rawDragOffsetX = c.x - w.x;
+                _rawDragOffsetY = c.y - w.y;
                 _rawDragGrabbed = true;
-                WindowDebugLog.Log("rawGrab base=(" + _rawDragBaseX + "," + _rawDragBaseY + ") grab=(" + _rawGrabX + "," + _rawGrabY + ")");
+                WindowDebugLog.Log("rawGrab off=(" + _rawDragOffsetX + "," + _rawDragOffsetY + ") win=(" + w.x + "," + w.y + "," + w.width + ")");
             }
             return;
         }
 
         if (MacWindowHelper.TryGetCursorPosition(out Vector2Int cur))
         {
-            // Relative drag: window moves by the same delta as the cursor,
-            // even when the cursor is on another monitor.
-            int dx = cur.x - _rawGrabX;
-            int dy = cur.y - _rawGrabY;
-            int tx = _rawDragBaseX + dx;
-            int ty = _rawDragBaseY + dy;
+            // Drag-to-cursor: window's top-left = cursor - grab offset, so the
+            // model stays under the pointer. Clamped to keep it on the desktop.
+            int tx = cur.x - (int)_rawDragOffsetX;
+            int ty = cur.y - (int)_rawDragOffsetY;
 
-            // Keep the window fully within the desktop (all monitors), so the
-            // model is never pushed off the right of the primary into void.
+            // Clamp to desktop bounds so the model is never pushed off the
+            // right of the primary into void.
             try
             {
                 if (MacWindowHelper.TryGetWindowRect(out RectInt w))
@@ -499,11 +497,8 @@ public class AvatarWindowHandler : MonoBehaviour
                     }
                     if (maxX > minX)
                     {
-                        // Window's RIGHT edge must not go past the desktop's
-                        // right edge (or get stuck past the left).
                         int maxLeft = Mathf.Max(minX, maxX - w.width);
-                        int minLeft = minX;
-                        tx = Mathf.Clamp(tx, minLeft, maxLeft);
+                        tx = Mathf.Clamp(tx, minX, maxLeft);
                     }
                 }
             }
@@ -513,11 +508,11 @@ public class AvatarWindowHandler : MonoBehaviour
 
             MacWindowHelper.MoveWindowTopLeft(tx, ty);
 
-if (Time.unscaledTime - _rawDragLogTime > 0.5f)
-        {
-            _rawDragLogTime = Time.unscaledTime;
-            WindowDebugLog.Log("rawDrag target=(" + tx + "," + ty + ") base=(" + _rawDragBaseX + "," + _rawDragBaseY + ") cur=(" + cur.x + "," + cur.y + ")");
-        }
+            if (Time.unscaledTime - _rawDragLogTime > 0.5f)
+            {
+                _rawDragLogTime = Time.unscaledTime;
+                WindowDebugLog.Log("rawDrag target=(" + tx + "," + ty + ") cur=(" + cur.x + "," + cur.y + ")");
+            }
         }
 #endif
     }
