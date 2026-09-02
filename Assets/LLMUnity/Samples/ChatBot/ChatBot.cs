@@ -191,12 +191,35 @@ namespace LLMUnitySamples
         }
 
         /// <summary>
-        /// The horizontal side the whole chat widget hugs, based on where the
-        /// model sits on screen, so the widget isn't cut off by the screen edge.
+        /// The horizontal side the whole chat widget hugs:
         /// 0 = anchored left (draws right), 1 = anchored right (draws left).
+        /// Works out whether the app window sits on the left or right half of
+        /// the primary monitor and picks the side that points the widget into
+        /// the open desktop space (away from the screen edge the window hugs).
         /// </summary>
         int GetWidgetSide()
         {
+            try
+            {
+                var uwc = Kirurobo.UniWindowController.current;
+                if (uwc != null && uwc.windowSize.x > 0f)
+                {
+                    RectInt primary = MonitorHelper.GetPrimaryMonitorRect();
+                    if (primary.width > 0)
+                    {
+                        Vector2 winPos = uwc.windowPosition;
+                        float windowCenterX = winPos.x + uwc.windowSize.x * 0.5f;
+                        float monitorCenterX = primary.x + (float)primary.width * 0.5f;
+                        return windowCenterX < monitorCenterX ? 0 : 1;
+                    }
+                }
+            }
+            catch (System.Exception)
+            {
+                // fall through to the model-viewport heuristic
+            }
+
+            // Fallback: model position within the camera viewport
             if (avatarAnimator == null) return widgetSide;
             Camera cam = targetCamera != null ? targetCamera : Camera.main;
             if (cam == null) return widgetSide;
