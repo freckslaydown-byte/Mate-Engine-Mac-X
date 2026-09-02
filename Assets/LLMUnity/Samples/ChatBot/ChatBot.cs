@@ -76,6 +76,8 @@ namespace LLMUnitySamples
         private bool warmUpDone = false;
         private int lastBubbleOutsideFOV = -1;
         private int widgetSide = 1; // 0 = hug left (draw right), 1 = hug right (draw left)
+        private int lastLoggedSide = -1;
+        private float lastLoggedSideTime = -1f;
 
         // AI bubble click-to-speak: maps bubble RectTransform to its text
         private readonly List<(RectTransform rt, System.Func<string> getText)> aiBubbleClickTargets = new();
@@ -196,36 +198,102 @@ namespace LLMUnitySamples
         /// Works out whether the app window sits on the left or right half of
         /// the primary monitor and picks the side that points the widget into
         /// the open desktop space (away from the screen edge the window hugs).
+        /// Every decision is logged to chatwidget.log for diagnostics.
         /// </summary>
         int GetWidgetSide()
         {
+            int side = widgetSide;
+            string reason = null;
+            float monCenterX = 0f, winCenterX = 0f;
+            Vector3 vp = default;
+
+            // 1) Preferred: app window position vs primary monitor center
             try
             {
                 var uwc = Kirurobo.UniWindowController.current;
-                if (uwc != null && uwc.windowSize.x > 0f)
+                if (uwc == null)
+                {
+                    reason = "uwc-null";
+                }
+                else if (uwc.windowSize.x <= 0f || uwc.windowSize.y <= 0f)
+                {
+                    reason = "window-size-not-ready (" + uwc.windowSize.x + "x" + uwc.windowSize.y + ")";
+                }
+                else
                 {
                     RectInt primary = MonitorHelper.GetPrimaryMonitorRect();
-                    if (primary.width > 0)
+                    if (primary.width <= 0 || primary.height <= 0)
+                    {
+                        reason = "primary-invalid (" + primary.x + "," + primary.y + " " + primary.width + "x" + primary.height + ")";
+                    }
+                    else
                     {
                         Vector2 winPos = uwc.windowPosition;
-                        float windowCenterX = winPos.x + uwc.windowSize.x * 0.5f;
-                        float monitorCenterX = primary.x + (float)primary.width * 0.5f;
-                        return windowCenterX < monitorCenterX ? 0 : 1;
+                        winCenterX = winPos.x + uwc.windowSize.x * 0.5f;
+                        monCenterX = primary.x + (float)primary.width * 0.5f;
+                        side = winCenterX < monCenterX ? 0 : 1;
+                        reason = "window-side (" + winPos.x + "+" + uwc.windowSize.x * 0.5f + " < " + monCenterX + " ?)";
                     }
                 }
             }
-            catch (System.Exception)
+            catch (System.Exception e)
             {
-                // fall through to the model-viewport heuristic
+                reason = "exception: " + e.Message;
             }
 
-            // Fallback: model position within the camera viewport
-            if (avatarAnimator == null) return widgetSide;
-            Camera cam = targetCamera != null ? targetCamera : Camera.main;
-            if (cam == null) return widgetSide;
-            Vector3 vp = cam.WorldToViewportPoint(avatarAnimator.transform.position);
-            if (vp.z <= 0f) return widgetSide; // behind the camera: keep current side
-            return vp.x < 0.5f ? 0 : 1;
+            // 2) Fallback: model position within the camera viewport
+            if (side == widgetSide && reason != null)
+            {
+                int fallbackSide = 1;
+                bool usedFallback = false;
+                if (avatarAnimator == null)
+                {
+                    reason = "avatar-null";
+                }
+                else
+                {
+                    Camera cam = targetCamera != null ? targetCamera : Camera.main;
+                    if (cam != null)
+                    {
+                        vp = cam.WorldToViewportPoint(avatarAnimator.transform.position);
+                        if (vp.z > 0f)
+                        {
+                            fallbackSide = vp.x < 0.5f ? 0 : 1;
+                            usedFallback = true;
+                        }
+                    }
+                }
+                if (usedFallback)
+                {
+                    side = fallbackSide;
+                    reason = "model-viewport (" + vp.x + ")";
+                }
+                else
+                {
+                    reason = reason + ", no-fallback-usable";
+                }
+            }
+
+            // Throttled diagnostics: log when the side changes or once per 10s
+            if (side != lastLoggedSide || Time.realtimeSinceStartup - lastLoggedSideTime > 10f)
+            {
+                lastLoggedSide = side;
+                lastLoggedSideTime = Time.realtimeSinceStartup;
+                LogWidget("side=" + side + " reason=" + reason);
+            }
+            return side;
+        }
+
+        void LogWidget(string msg)
+        {
+            try
+            {
+                string p = System.IO.Path.Combine(Application.persistentDataPath, "chatwidget.log");
+                System.IO.File.AppendAllText(p, System.DateTime.Now.ToString("HH:mm:ss") + " " + msg + "\n");
+            }
+            catch (System.Exception)
+            {
+            }
         }
 
         /// <summary>
