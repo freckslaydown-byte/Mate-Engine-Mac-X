@@ -370,38 +370,35 @@ public class AvatarWindowHandler : MonoBehaviour
         if (controller.isDragging)
         {
             bool rawDragNow = SaveLoadHandler.Instance != null && SaveLoadHandler.Instance.data.enableRawWindowDrag;
-            if (rawDragNow && snappedHWND == IntPtr.Zero)
+            bool altHeld = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
+
+            if (rawDragNow && !altHeld)
             {
-                // Raw drag mode: free placement. Window-snapping is disabled in
-                // this mode so the pet stays where the user puts it (the snap
-                // feature was yanking the huge window to another window's edge
-                // on drop).
+                // Raw-drag mode, no modifier: ALWAYS a free placement drag.
+                // Clear any lingering window-snap so nothing can pin the pet
+                // to a remembered window edge on drop, then follow the cursor.
+                if (snappedHWND != IntPtr.Zero && !IsStillNearSnappedWindow())
+                    ClearSnapAndHide();
                 HandleRawDrag();
             }
-            // "Hold LeftAlt to window-sit" remains available in raw-drag mode:
-            // window-snap only happens while holding the modifier, so regular
-            // drags are never hijacked by the sit system.
-            else if (rawDragNow && (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)))
+            else if (rawDragNow && snappedHWND == IntPtr.Zero)
             {
-                if (snappedHWND == IntPtr.Zero) { if (_canSitHold && DraggedPastSnapThreshold()) TrySnap(); }
-                else if (macSpaceTransition) { _snapSmoothingActive = false; _snapVelX = _snapVelY = 0f; }
-                else if (!IsStillNearSnappedWindow()) { SetGuardZoneFromCurrent(); ClearSnapAndHide(true); }
-                else FollowSnapped(true);
+                // Alt held, not snapped yet: allow window-sit snapping.
+                if (_canSitHold && DraggedPastSnapThreshold()) TrySnap();
             }
-            else if (rawDragNow && snappedHWND != IntPtr.Zero && IsStillNearSnappedWindow())
+            else if (rawDragNow && !IsStillNearSnappedWindow())
             {
-                // Was snapped before this drag (from Alt-hold): allow snapping
-                // behavior to continue while still holding Alt.
-                FollowSnapped(true);
+                // Alt held but dragged far from the snapped window: drop the snap.
+                SetGuardZoneFromCurrent(); ClearSnapAndHide(true);
             }
             else if (rawDragNow)
             {
-                // Raw drag active, not Alt-held, and not snapped: plain drag.
-                HandleRawDrag();
+                // Alt held and still near the snapped window: keep sitting.
+                FollowSnapped(true);
             }
-            else if (snappedHWND == IntPtr.Zero) { if (_canSitHold && DraggedPastSnapThreshold()) TrySnap(); }
-            else if (macSpaceTransition) { _snapSmoothingActive = false; _snapVelX = _snapVelY = 0f; }
-            else if (!IsStillNearSnappedWindow()) { SetGuardZoneFromCurrent(); ClearSnapAndHide(true); }
+            else if (!rawDragNow && snappedHWND == IntPtr.Zero) { if (_canSitHold && DraggedPastSnapThreshold()) TrySnap(); }
+            else if (!rawDragNow && macSpaceTransition) { _snapSmoothingActive = false; _snapVelX = _snapVelY = 0f; }
+            else if (!rawDragNow && !IsStillNearSnappedWindow()) { SetGuardZoneFromCurrent(); ClearSnapAndHide(true); }
             else FollowSnapped(true);
         }
         else if (!controller.isDragging && snappedHWND != IntPtr.Zero && !macSpaceTransition) FollowSnapped(false);
