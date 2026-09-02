@@ -75,6 +75,7 @@ namespace LLMUnitySamples
         private BubbleUI playerUI, aiUI;
         private bool warmUpDone = false;
         private int lastBubbleOutsideFOV = -1;
+        private int widgetSide = 1; // 0 = hug left (draw right), 1 = hug right (draw left)
 
         // AI bubble click-to-speak: maps bubble RectTransform to its text
         private readonly List<(RectTransform rt, System.Func<string> getText)> aiBubbleClickTargets = new();
@@ -189,9 +190,58 @@ namespace LLMUnitySamples
             if (avatarAnimator != null) avatarAnimator.SetBool(isTalkingHash, false);
         }
 
+        /// <summary>
+        /// The horizontal side the whole chat widget hugs, based on where the
+        /// model sits on screen, so the widget isn't cut off by the screen edge.
+        /// 0 = anchored left (draws right), 1 = anchored right (draws left).
+        /// </summary>
+        int GetWidgetSide()
+        {
+            if (avatarAnimator == null) return widgetSide;
+            Camera cam = targetCamera != null ? targetCamera : Camera.main;
+            if (cam == null) return widgetSide;
+            Vector3 vp = cam.WorldToViewportPoint(avatarAnimator.transform.position);
+            if (vp.z <= 0f) return widgetSide; // behind the camera: keep current side
+            return vp.x < 0.5f ? 0 : 1;
+        }
+
+        /// <summary>
+        /// Repositions every bubble and the input field to hug the given side.
+        /// Keeps each element's current position/size, flipping only the anchor
+        /// and the sign of the horizontal offset.
+        /// </summary>
+        void ApplyWidgetSide(int side)
+        {
+            if (side == widgetSide) return;
+            widgetSide = side;
+            playerUI.leftPosition = side;
+            aiUI.leftPosition = side;
+
+            foreach (Bubble b in chatBubbles)
+                ReAnchorToSide(b.GetRectTransform(), side);
+
+            if (inputBubble != null)
+                ReAnchorToSide(inputBubble.GetRectTransform(), side);
+        }
+
+        void ReAnchorToSide(RectTransform rt, int side)
+        {
+            if (rt == null) return;
+            Vector2 ap = rt.anchoredPosition;
+            rt.pivot = new Vector2(side, rt.pivot.y);
+            rt.anchorMin = new Vector2(side, rt.anchorMin.y);
+            rt.anchorMax = new Vector2(side, rt.anchorMax.y);
+            ap.x = Mathf.Abs(ap.x) * (side == 1 ? -1f : 1f);
+            rt.anchoredPosition = ap;
+        }
+
         Bubble AddBubble(string message, bool isPlayerMessage)
         {
-            Bubble bubble = new Bubble(chatContainer, isPlayerMessage ? playerUI : aiUI, isPlayerMessage ? "PlayerBubble" : "AIBubble", message);
+            int side = GetWidgetSide();
+            if (side != widgetSide) ApplyWidgetSide(side);
+            BubbleUI ui = isPlayerMessage ? playerUI : aiUI;
+            ui.leftPosition = side;
+            Bubble bubble = new Bubble(chatContainer, ui, isPlayerMessage ? "PlayerBubble" : "AIBubble", message);
             chatBubbles.Add(bubble);
             bubble.OnResize(MarkLayoutDirty);
 
@@ -373,6 +423,10 @@ namespace LLMUnitySamples
         void Update()
         {
             RefreshAvatarIfChanged();
+
+            // Keep the whole widget (input + all bubbles) on the same side as the model
+            int side = GetWidgetSide();
+            if (side != widgetSide) ApplyWidgetSide(side);
 
             if (!inputBubble.inputFocused() && warmUpDone)
             {
