@@ -25,6 +25,18 @@ public static class WindowDebugLog
     {
         Log("STARTUP persistentDataPath=" + Application.persistentDataPath);
         Log("STARTUP app path=" + Application.dataPath);
+#if UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
+        try
+        {
+            var mons = MacWindowHelper.GetMonitors();
+            for (int i = 0; i < mons.Count; i++)
+                Log("STARTUP monitor[" + i + "]=" + mons[i] + " (primary=" + MacWindowHelper.GetPrimaryMonitorRect() + ")");
+        }
+        catch (System.Exception e)
+        {
+            Log("STARTUP monitor read error: " + e.Message);
+        }
+#endif
         try
         {
             var path = System.IO.Path.Combine(Application.persistentDataPath, "settings.json");
