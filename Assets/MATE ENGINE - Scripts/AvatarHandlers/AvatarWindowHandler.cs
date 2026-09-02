@@ -129,6 +129,8 @@ public class AvatarWindowHandler : MonoBehaviour
     float _guardRadiusSq;
     void Start()
     {
+        WindowDebugLog.StartupDiagnostics();
+        WindowDebugLog.Log("AvatarWindowHandler.Start rawDrag=" + (SaveLoadHandler.Instance != null && SaveLoadHandler.Instance.data.enableRawWindowDrag));
 #if UNITY_STANDALONE_WIN
         unityHWND = Process.GetCurrentProcess().MainWindowHandle;
         _currentPid = GetCurrentProcessId();

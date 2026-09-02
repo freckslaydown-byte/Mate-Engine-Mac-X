@@ -66,6 +66,7 @@ public class AvatarHideHandler : MonoBehaviour
 
     void Start()
     {
+        WindowDebugLog.Log("AvatarHideHandler.Start enableRawDragFollow=" + enableRawDragFollow);
 #if UNITY_STANDALONE_WIN
         unityHWND = Process.GetCurrentProcess().MainWindowHandle;
 #endif
