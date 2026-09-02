@@ -34,6 +34,8 @@ public class AvatarAnimatorController : MonoBehaviour
     private static readonly int isDancingParam = Animator.StringToHash("isDancing");
     private static readonly int idleIndexParam = Animator.StringToHash("IdleIndex");
 
+    private float cursorOutsideTimer; // macOS stuck-drag recovery
+
     private MMDevice defaultDevice;
     private MMDeviceEnumerator enumerator;
     private Coroutine soundCheckCoroutine, idleTransitionCoroutine, danceTransitionCoroutine;
@@ -207,6 +209,38 @@ public class AvatarAnimatorController : MonoBehaviour
             SetDancing(false);
         }
         if (Input.GetMouseButtonUp(0)) mouseHeld = false;
+#if UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
+        // Stuck-drag recovery (macOS): if a drag carries the cursor outside our
+        // window, the mouse-up event is delivered to the other app and Unity
+        // never sees it, leaving isDragging stuck forever. The native reads work
+        // even while another app has focus, so we can detect the cursor leaving
+        // the window mid-drag and force-release after a short debounce.
+        if (isDragging && mouseHeld &&
+            MacWindowHelper.TryGetWindowRect(out RectInt winRect) &&
+            MacWindowHelper.TryGetCursorPosition(out Vector2Int cur))
+        {
+            bool inside = cur.x >= winRect.x && cur.x <= winRect.x + winRect.width &&
+                          cur.y >= winRect.y && cur.y <= winRect.y + winRect.height;
+            if (inside)
+            {
+                cursorOutsideTimer = 0f;
+            }
+            else
+            {
+                cursorOutsideTimer += Time.unscaledDeltaTime;
+                if (cursorOutsideTimer > 0.25f)
+                {
+                    mouseHeld = false;
+                    dragLockTimer = 0f;
+                    SetDragging(false);
+                }
+            }
+        }
+        else
+        {
+            cursorOutsideTimer = 0f;
+        }
+#endif
         if (dragLockTimer > 0f)
         {
             dragLockTimer -= Time.deltaTime;
