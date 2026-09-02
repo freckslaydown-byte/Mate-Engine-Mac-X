@@ -486,11 +486,11 @@ public class AvatarWindowHandler : MonoBehaviour
             int ty = _rawDragBaseY + dy;
             MacWindowHelper.MoveWindowTopLeft(tx, ty);
 
-            if (Time.unscaledTime - _rawDragLogTime > 0.2f)
-            {
-                _rawDragLogTime = Time.unscaledTime;
-                WindowDebugLog.Log("rawDrag target=(" + tx + "," + ty + ") base=(" + _rawDragBaseX + "," + _rawDragBaseY + ") cur=(" + cur.x + "," + cur.y + ")");
-            }
+if (Time.unscaledTime - _rawDragLogTime > 0.5f)
+        {
+            _rawDragLogTime = Time.unscaledTime;
+            WindowDebugLog.Log("rawDrag target=(" + tx + "," + ty + ") base=(" + _rawDragBaseX + "," + _rawDragBaseY + ") cur=(" + cur.x + "," + cur.y + ")");
+        }
         }
 #endif
     }
