@@ -210,22 +210,49 @@ public class AvatarAnimatorController : MonoBehaviour
         }
         if (Input.GetMouseButtonUp(0)) mouseHeld = false;
 #if UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
-        // Stuck-drag recovery (macOS): if a drag carries the cursor outside our
-        // window, the mouse-up event is delivered to the other app and Unity
-        // never sees it, leaving isDragging stuck forever. The native reads work
-        // even while another app has focus, so we can detect the cursor leaving
-        // the window mid-drag and force-release after a short debounce.
-        if (isDragging && mouseHeld &&
-            MacWindowHelper.TryGetWindowRect(out RectInt winRect) &&
-            MacWindowHelper.TryGetCursorPosition(out Vector2Int cur))
+        // Stuck-drag recovery (macOS): if a drag loses the mouse-up (e.g. the
+        // cursor leaves the window, or another app like Slack is brought
+        // frontmost over us mid-drag), Unity never sees the release and
+        // isDragging stays stuck forever. Detect it natively so we can
+        // force-release even while another app has focus.
+        if (isDragging && mouseHeld)
         {
-            bool inside = cur.x >= winRect.x && cur.x <= winRect.x + winRect.width &&
-                          cur.y >= winRect.y && cur.y <= winRect.y + winRect.height;
-            if (inside)
+            bool stuck = false;
+            string why = null;
+
+            // (a) App no longer frontmost while we think we're dragging:
+            //     the release likely went to another app.
+            if (MacWindowHelper.IsAppFocused() == false)
             {
-                cursorOutsideTimer = 0f;
+                stuck = true;
+                why = "app-not-focused";
             }
-            else
+
+            if (!stuck &&
+                MacWindowHelper.TryGetCursorPosition(out Vector2Int cur))
+            {
+                // (b) Cursor left every monitor region -> definitely released or
+                //     dragged out into the void; also handle the primary's right
+                //     edge being a hard stop (monitor to the right).
+                bool inside = false;
+                var mons = MacWindowHelper.GetMonitors();
+                for (int i = 0; i < mons.Count; i++)
+                {
+                    RectInt m = mons[i];
+                    if (cur.x >= m.x && cur.x < m.x + m.width &&
+                        cur.y >= m.y && cur.y < m.y + m.height)
+                    { inside = true; break; }
+                }
+                // Also count being on the primary's right edge as "at the limit":
+                // a huge window can't follow past it; treat as stuck.
+                if (!inside)
+                {
+                    stuck = true;
+                    why = "cursor-off-monitors";
+                }
+            }
+
+            if (stuck)
             {
                 cursorOutsideTimer += Time.unscaledDeltaTime;
                 if (cursorOutsideTimer > 0.25f)
@@ -233,7 +260,12 @@ public class AvatarAnimatorController : MonoBehaviour
                     mouseHeld = false;
                     dragLockTimer = 0f;
                     SetDragging(false);
+                    WindowDebugLog.Log("stuckDragRelease reason=" + why);
                 }
+            }
+            else
+            {
+                cursorOutsideTimer = 0f;
             }
         }
         else
