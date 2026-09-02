@@ -219,21 +219,19 @@ public class AvatarAnimatorController : MonoBehaviour
         {
             bool stuck = false;
             string why = null;
+            Vector2Int cur = default;
+            bool gotCur = MacWindowHelper.TryGetCursorPosition(out cur);
 
-            // (a) App no longer frontmost while we think we're dragging:
-            //     the release likely went to another app.
+            // (a) App no longer frontmost while we think we're dragging.
             if (MacWindowHelper.IsAppFocused() == false)
             {
                 stuck = true;
                 why = "app-not-focused";
             }
 
-            if (!stuck &&
-                MacWindowHelper.TryGetCursorPosition(out Vector2Int cur))
+            // (b) Cursor left every monitor region.
+            if (!stuck && gotCur)
             {
-                // (b) Cursor left every monitor region -> definitely released or
-                //     dragged out into the void; also handle the primary's right
-                //     edge being a hard stop (monitor to the right).
                 bool inside = false;
                 var mons = MacWindowHelper.GetMonitors();
                 for (int i = 0; i < mons.Count; i++)
@@ -243,12 +241,42 @@ public class AvatarAnimatorController : MonoBehaviour
                         cur.y >= m.y && cur.y < m.y + m.height)
                     { inside = true; break; }
                 }
-                // Also count being on the primary's right edge as "at the limit":
-                // a huge window can't follow past it; treat as stuck.
                 if (!inside)
                 {
                     stuck = true;
                     why = "cursor-off-monitors";
+                }
+            }
+
+            // (c) Window is blocked at a desktop/monitor edge (can't follow the
+            //     cursor any further) — release so the drag self-heals instead
+            //     of flickering at the edge until the user rescues the mouse.
+            if (!stuck && gotCur &&
+                MacWindowHelper.TryGetWindowRect(out RectInt w))
+            {
+                var mons = MacWindowHelper.GetMonitors();
+                int minX = int.MaxValue, maxX = int.MinValue;
+                for (int i = 0; i < mons.Count; i++)
+                {
+                    minX = Mathf.Min(minX, mons[i].x);
+                    maxX = Mathf.Max(maxX, mons[i].x + mons[i].width);
+                }
+                if (maxX > minX)
+                {
+                    bool atRightLimit = (w.x + w.width) >= (maxX - 1);
+                    bool atLeftLimit = w.x <= minX;
+                    // Only consider it blocked if the cursor is trying to go
+                    // beyond the edge we're pinned at (it's not just resting).
+                    if (atRightLimit && cur.x > (maxX - 2))
+                    {
+                        stuck = true;
+                        why = "window-blocked-right";
+                    }
+                    else if (atLeftLimit && cur.x < (minX + 2))
+                    {
+                        stuck = true;
+                        why = "window-blocked-left";
+                    }
                 }
             }
 
