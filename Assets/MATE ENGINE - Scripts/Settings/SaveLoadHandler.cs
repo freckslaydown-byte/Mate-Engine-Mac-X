@@ -252,6 +252,10 @@ public class SaveLoadHandler : MonoBehaviour
         // the handshake is POSTed to {daemonUrl}/handshake.
         public bool daemonEnabled = false;
         public string daemonUrl = "";
+        // Optional shared secret for the command channel. When non-empty, the app
+        // sends it as X-SuperClaw-Token on command polls/acks, and the daemon
+        // requires it (HS_TOKEN). Leave empty for no auth (LAN trust).
+        public string daemonToken = "";
 
         // GPT-SoVITS TTS settings
         public string ttsApiUrl = "http://100.75.53.37:9880/tts";
@@ -326,6 +330,11 @@ public class SaveLoadHandler : MonoBehaviour
             data.settingsVersion = 2;
             SaveToDisk();
         }
+        if (data.settingsVersion < 3)
+        {
+            data.settingsVersion = 3;
+            SaveToDisk();
+        }
     }
 
     // ── SuperClaw daemon handshake ────────────────────────────────────────────
@@ -336,6 +345,7 @@ public class SaveLoadHandler : MonoBehaviour
     private const float DaemonPollInterval = 2f;
     private float daemonPollTimer;
     private string lastHandshakeSignature;
+    private bool commandPollInFlight;
 
     void Update()
     {
@@ -344,6 +354,7 @@ public class SaveLoadHandler : MonoBehaviour
         if (daemonPollTimer > 0f) return;
         daemonPollTimer = DaemonPollInterval;
         TryPushDaemonHandshake();
+        TryPollDaemonCommand();
     }
 
     string DaemonHandshakeSignature()
@@ -415,6 +426,99 @@ public class SaveLoadHandler : MonoBehaviour
         try { return Dns.GetHostName(); } catch { }
         try { return Environment.MachineName; } catch { }
         return "unknown";
+    }
+
+    // ── SuperClaw daemon command channel ────────────────────────────────────
+    // Polls the daemon for commands (e.g. "speak") and executes them. This lets
+    // SuperClaw drive the app to talk via its configured TTS. Data stays local;
+    // only the command payload travels over the LAN daemon link.
+    string ProgramNameForDaemon()
+    {
+        return string.IsNullOrEmpty(Application.productName) ? "MateEngineX" : Application.productName;
+    }
+
+    string DaemonAuthToken() => string.IsNullOrEmpty(data.daemonToken) ? null : data.daemonToken;
+
+    void TryPollDaemonCommand()
+    {
+        if (!data.daemonEnabled || string.IsNullOrEmpty(data.daemonUrl)) return;
+        if (commandPollInFlight) return;
+        commandPollInFlight = true;
+        StartCoroutine(PollDaemonCommandCoroutine());
+    }
+
+    System.Collections.IEnumerator PollDaemonCommandCoroutine()
+    {
+        string url = data.daemonUrl.TrimEnd('/') + "/commands/poll?client=" + Uri.EscapeDataString(ProgramNameForDaemon());
+        using (var req = UnityWebRequest.Get(url))
+        {
+            if (DaemonAuthToken() != null) req.SetRequestHeader("X-SuperClaw-Token", DaemonAuthToken());
+            req.timeout = 3;
+            yield return req.SendWebRequest();
+
+            if (req.result != UnityWebRequest.Result.Success)
+            {
+                commandPollInFlight = false;
+                yield break; // daemon may be temporarily unreachable; retry next poll
+            }
+
+            try
+            {
+                var obj = Newtonsoft.Json.Linq.JObject.Parse(req.downloadHandler.text);
+                var cmd = obj["command"];
+                if (cmd != null && cmd.Type != Newtonsoft.Json.Linq.JTokenType.Null)
+                {
+                    string id = (string)cmd["id"];
+                    string type = (string)cmd["type"];
+                    string text = (string)cmd["text"];
+                    string status = "failed";
+                    if (type == "speak" && !string.IsNullOrEmpty(text))
+                    {
+                        status = ExecuteSpeakCommand(text) ? "done" : "failed";
+                    }
+                    StartCoroutine(SendDaemonCommandAck(id, status));
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("[SaveLoadHandler] Could not parse daemon command: " + e.Message);
+            }
+        }
+        commandPollInFlight = false;
+    }
+
+    bool ExecuteSpeakCommand(string text)
+    {
+        if (data != null && !data.ttsEnabled)
+        {
+            Debug.LogWarning("[SaveLoadHandler] Daemon speak ignored: ttsEnabled is false.");
+            return false;
+        }
+        var tts = UnityEngine.Object.FindAnyObjectByType<SoVITSTTSHandler>();
+        if (tts == null)
+        {
+            Debug.LogWarning("[SaveLoadHandler] Daemon speak ignored: no SoVITSTTSHandler in scene.");
+            return false;
+        }
+        Debug.Log("[SaveLoadHandler] Daemon speak: " + text);
+        tts.Speak(text);
+        return true;
+    }
+
+    System.Collections.IEnumerator SendDaemonCommandAck(string id, string status)
+    {
+        string url = data.daemonUrl.TrimEnd('/') + "/commands/ack";
+        string json = JsonConvert.SerializeObject(new { id = id, status = status });
+        byte[] body = Encoding.UTF8.GetBytes(json);
+        using (var req = new UnityWebRequest(url, "POST"))
+        {
+            req.uploadHandler = new UploadHandlerRaw(body);
+            req.downloadHandler = new DownloadHandlerBuffer();
+            req.SetRequestHeader("Content-Type", "application/json");
+            if (DaemonAuthToken() != null) req.SetRequestHeader("X-SuperClaw-Token", DaemonAuthToken());
+            req.timeout = 3;
+            yield return req.SendWebRequest();
+        }
     }
 
     public static void SyncAllowedAppsToAllAvatars()
