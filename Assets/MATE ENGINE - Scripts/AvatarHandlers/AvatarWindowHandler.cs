@@ -478,12 +478,39 @@ public class AvatarWindowHandler : MonoBehaviour
         if (MacWindowHelper.TryGetCursorPosition(out Vector2Int cur))
         {
             // Relative drag: window moves by the same delta as the cursor,
-            // even when the cursor is on another monitor. This avoids the
-            // grab-offset tether that stopped the window at the monitor edge.
+            // even when the cursor is on another monitor.
             int dx = cur.x - _rawGrabX;
             int dy = cur.y - _rawGrabY;
             int tx = _rawDragBaseX + dx;
             int ty = _rawDragBaseY + dy;
+
+            // Keep the window fully within the desktop (all monitors), so the
+            // model is never pushed off the right of the primary into void.
+            try
+            {
+                if (MacWindowHelper.TryGetWindowRect(out RectInt w))
+                {
+                    var mons = MacWindowHelper.GetMonitors();
+                    int minX = int.MaxValue, maxX = int.MinValue;
+                    for (int i = 0; i < mons.Count; i++)
+                    {
+                        minX = Mathf.Min(minX, mons[i].x);
+                        maxX = Mathf.Max(maxX, mons[i].x + mons[i].width);
+                    }
+                    if (maxX > minX)
+                    {
+                        // Window's RIGHT edge must not go past the desktop's
+                        // right edge (or get stuck past the left).
+                        int maxLeft = Mathf.Max(minX, maxX - w.width);
+                        int minLeft = minX;
+                        tx = Mathf.Clamp(tx, minLeft, maxLeft);
+                    }
+                }
+            }
+            catch (System.Exception)
+            {
+            }
+
             MacWindowHelper.MoveWindowTopLeft(tx, ty);
 
 if (Time.unscaledTime - _rawDragLogTime > 0.5f)
