@@ -471,20 +471,23 @@ public class AvatarWindowHandler : MonoBehaviour
 
     void LateUpdateDropLog()
     {
-        // Called once on the frame the drag ends: log final placement + a
-        // delayed check so a rebound/teleport back is visible in the log.
+        if (_dropLogRunning) return; // atomic guard: never stack coroutines
+        _dropLogRunning = true;
         StartCoroutine(DropLogCoroutine());
     }
 
+    bool _dropLogRunning;
+
     System.Collections.IEnumerator DropLogCoroutine()
     {
-        yield return null;
-        if (MacWindowHelper.TryGetWindowRect(out RectInt w1))
-            WindowDebugLog.Log("drop win=" + w1);
-        yield return new WaitForSecondsRealtime(0.4f);
-        if (MacWindowHelper.TryGetWindowRect(out RectInt w2))
-            WindowDebugLog.Log("drop+0.4s win=" + w2);
+        if (MacWindowHelper.TryGetWindowRect(out RectInt w1) &&
+            MacWindowHelper.TryGetCursorPosition(out Vector2Int c1))
+            WindowDebugLog.Log("drop win=" + w1 + " cur=" + c1);
+        yield return new WaitForSecondsRealtime(0.5f);
+        if (_rawDragGrabbed && MacWindowHelper.TryGetWindowRect(out RectInt w2))
+            WindowDebugLog.Log("drop+0.5s win=" + w2);
         _rawDragGrabbed = false;
+        _dropLogRunning = false;
     }
     bool DraggedPastSnapThreshold()
     {
