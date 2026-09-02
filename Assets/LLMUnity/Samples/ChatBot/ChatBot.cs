@@ -78,6 +78,8 @@ namespace LLMUnitySamples
         private int widgetSide = 1; // 0 = hug left (draw right), 1 = hug right (draw left)
         private int lastLoggedSide = -1;
         private float lastLoggedSideTime = -1f;
+        private int pendingSide = -1;          // side being considered (awaiting debounce)
+        private float pendingSideSince = -1f;  // when pendingSide first appeared
 
         // AI bubble click-to-speak: maps bubble RectTransform to its text
         private readonly List<(RectTransform rt, System.Func<string> getText)> aiBubbleClickTargets = new();
@@ -198,8 +200,13 @@ namespace LLMUnitySamples
         /// Works out whether the app window sits on the left or right half of
         /// the primary monitor and picks the side that points the widget into
         /// the open desktop space (away from the screen edge the window hugs).
-        /// Every decision is logged to chatwidget.log for diagnostics.
+        /// Includes hysteresis (won't flip near the monitor center) and a
+        /// debounce (side must hold ~0.4s before it is applied) so a jittery
+        /// window-position read cannot make the widget flicker.
         /// </summary>
+        const float SideHysteresisMargin = 80f;   // px from monitor center before a flip counts
+        const float SideDebounceSeconds = 0.4f;   // how long the new side must hold
+
         int GetWidgetSide()
         {
             int side = widgetSide;
@@ -231,8 +238,11 @@ namespace LLMUnitySamples
                         Vector2 winPos = uwc.windowPosition;
                         winCenterX = winPos.x + uwc.windowSize.x * 0.5f;
                         monCenterX = primary.x + (float)primary.width * 0.5f;
-                        side = winCenterX < monCenterX ? 0 : 1;
-                        reason = "window-side (" + winPos.x + "+" + uwc.windowSize.x * 0.5f + " < " + monCenterX + " ?)";
+                        float offset = winCenterX - monCenterX;
+                        if (offset < -SideHysteresisMargin) side = 0;      // firmly left half  -> draw right
+                        else if (offset > SideHysteresisMargin) side = 1;   // firmly right half -> draw left
+                        else side = widgetSide;                             // near center: keep current
+                        reason = "window-side (" + winPos.x + "+" + uwc.windowSize.x * 0.5f + " off=" + offset.ToString("0") + " -> " + side + ")";
                     }
                 }
             }
@@ -241,10 +251,10 @@ namespace LLMUnitySamples
                 reason = "exception: " + e.Message;
             }
 
-            // 2) Fallback: model position within the camera viewport
+            // 2) Fallback: model position within the camera viewport (same hysteresis)
             if (side == widgetSide && reason != null)
             {
-                int fallbackSide = 1;
+                int fallbackSide = widgetSide;
                 bool usedFallback = false;
                 if (avatarAnimator == null)
                 {
@@ -258,7 +268,10 @@ namespace LLMUnitySamples
                         vp = cam.WorldToViewportPoint(avatarAnimator.transform.position);
                         if (vp.z > 0f)
                         {
-                            fallbackSide = vp.x < 0.5f ? 0 : 1;
+                            // vp.x == 0.5 exactly is also ambiguous: keep current side
+                            if (vp.x < 0.5f - 0.05f) fallbackSide = 0;
+                            else if (vp.x > 0.5f + 0.05f) fallbackSide = 1;
+                            else fallbackSide = widgetSide;
                             usedFallback = true;
                         }
                     }
@@ -517,7 +530,23 @@ namespace LLMUnitySamples
 
             // Keep the whole widget (input + all bubbles) on the same side as the model
             int side = GetWidgetSide();
-            if (side != widgetSide) ApplyWidgetSide(side);
+            if (side != widgetSide)
+            {
+                // Debounce: the new side must hold for SideDebounceSeconds before applying
+                if (side != pendingSide)
+                {
+                    pendingSide = side;
+                    pendingSideSince = Time.realtimeSinceStartup;
+                }
+                else if (Time.realtimeSinceStartup - pendingSideSince >= SideDebounceSeconds)
+                {
+                    ApplyWidgetSide(side);
+                }
+            }
+            else
+            {
+                pendingSide = -1;
+            }
 
             if (!inputBubble.inputFocused() && warmUpDone)
             {
