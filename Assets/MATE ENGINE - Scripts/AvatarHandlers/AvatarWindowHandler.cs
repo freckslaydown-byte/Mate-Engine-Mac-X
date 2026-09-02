@@ -369,7 +369,15 @@ public class AvatarWindowHandler : MonoBehaviour
 #endif
         if (controller.isDragging)
         {
-            if (snappedHWND == IntPtr.Zero) { if (_canSitHold && DraggedPastSnapThreshold()) TrySnap(); }
+            bool rawDragNow = SaveLoadHandler.Instance != null && SaveLoadHandler.Instance.data.enableRawWindowDrag;
+            if (rawDragNow && snappedHWND == IntPtr.Zero)
+            {
+                // Raw drag: move the window to keep the grab point under the
+                // cursor. This runs in the component that is actually in the
+                // scene, so the pet can be dropped anywhere on any monitor.
+                HandleRawDrag();
+            }
+            else if (snappedHWND == IntPtr.Zero) { if (_canSitHold && DraggedPastSnapThreshold()) TrySnap(); }
             else if (macSpaceTransition) { _snapSmoothingActive = false; _snapVelX = _snapVelY = 0f; }
             else if (!IsStillNearSnappedWindow()) { SetGuardZoneFromCurrent(); ClearSnapAndHide(true); }
             else FollowSnapped(true);
@@ -416,8 +424,68 @@ public class AvatarWindowHandler : MonoBehaviour
             }
         }
         wasDragging = controller.isDragging;
+        if (!controller.isDragging && _rawDragGrabbed)
+            LateUpdateDropLog();
     }
     void LateUpdate() { UpdateOccluderQuadsFrameSync(); }
+
+    // ── Raw drag: pet follows cursor freely ──────────────────────────────────
+    float _rawDragOffsetX, _rawDragOffsetY;
+    bool _rawDragGrabbed;
+    float _rawDragLogTime = -1f;
+
+    void HandleRawDrag()
+    {
+#if UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
+        if (!controller.isDragging) { _rawDragGrabbed = false; return; }
+
+        if (!_rawDragGrabbed)
+        {
+            // First frame of the drag: remember where the grab point is inside
+            // the window (top-left origin).
+            if (MacWindowHelper.TryGetWindowRect(out RectInt w) &&
+                MacWindowHelper.TryGetCursorPosition(out Vector2Int c))
+            {
+                _rawDragOffsetX = c.x - w.x;
+                _rawDragOffsetY = c.y - w.y;
+                _rawDragGrabbed = true;
+                WindowDebugLog.Log("rawGrab off=(" + _rawDragOffsetX + "," + _rawDragOffsetY + ") win=" + w);
+            }
+            return;
+        }
+
+        if (MacWindowHelper.TryGetCursorPosition(out Vector2Int cur))
+        {
+            int tx = Mathf.RoundToInt(cur.x - _rawDragOffsetX);
+            int ty = Mathf.RoundToInt(cur.y - _rawDragOffsetY);
+            MacWindowHelper.MoveWindowTopLeft(tx, ty);
+
+            if (Time.unscaledTime - _rawDragLogTime > 0.2f)
+            {
+                _rawDragLogTime = Time.unscaledTime;
+                WindowDebugLog.Log("rawDrag target=(" + tx + "," + ty + ") cur=(" + cur.x + "," + cur.y + ")");
+            }
+        }
+#endif
+    }
+
+    void LateUpdateDropLog()
+    {
+        // Called once on the frame the drag ends: log final placement + a
+        // delayed check so a rebound/teleport back is visible in the log.
+        StartCoroutine(DropLogCoroutine());
+    }
+
+    System.Collections.IEnumerator DropLogCoroutine()
+    {
+        yield return null;
+        if (MacWindowHelper.TryGetWindowRect(out RectInt w1))
+            WindowDebugLog.Log("drop win=" + w1);
+        yield return new WaitForSecondsRealtime(0.4f);
+        if (MacWindowHelper.TryGetWindowRect(out RectInt w2))
+            WindowDebugLog.Log("drop+0.4s win=" + w2);
+        _rawDragGrabbed = false;
+    }
     bool DraggedPastSnapThreshold()
     {
 #if UNITY_STANDALONE_WIN
