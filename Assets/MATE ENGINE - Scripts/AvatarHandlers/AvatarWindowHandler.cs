@@ -372,9 +372,31 @@ public class AvatarWindowHandler : MonoBehaviour
             bool rawDragNow = SaveLoadHandler.Instance != null && SaveLoadHandler.Instance.data.enableRawWindowDrag;
             if (rawDragNow && snappedHWND == IntPtr.Zero)
             {
-                // Raw drag: move the window to keep the grab point under the
-                // cursor. This runs in the component that is actually in the
-                // scene, so the pet can be dropped anywhere on any monitor.
+                // Raw drag mode: free placement. Window-snapping is disabled in
+                // this mode so the pet stays where the user puts it (the snap
+                // feature was yanking the huge window to another window's edge
+                // on drop).
+                HandleRawDrag();
+            }
+            // "Hold LeftAlt to window-sit" remains available in raw-drag mode:
+            // window-snap only happens while holding the modifier, so regular
+            // drags are never hijacked by the sit system.
+            else if (rawDragNow && (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)))
+            {
+                if (snappedHWND == IntPtr.Zero) { if (_canSitHold && DraggedPastSnapThreshold()) TrySnap(); }
+                else if (macSpaceTransition) { _snapSmoothingActive = false; _snapVelX = _snapVelY = 0f; }
+                else if (!IsStillNearSnappedWindow()) { SetGuardZoneFromCurrent(); ClearSnapAndHide(true); }
+                else FollowSnapped(true);
+            }
+            else if (rawDragNow && snappedHWND != IntPtr.Zero && IsStillNearSnappedWindow())
+            {
+                // Was snapped before this drag (from Alt-hold): allow snapping
+                // behavior to continue while still holding Alt.
+                FollowSnapped(true);
+            }
+            else if (rawDragNow)
+            {
+                // Raw drag active, not Alt-held, and not snapped: plain drag.
                 HandleRawDrag();
             }
             else if (snappedHWND == IntPtr.Zero) { if (_canSitHold && DraggedPastSnapThreshold()) TrySnap(); }
