@@ -22,6 +22,10 @@ public class AvatarHideHandler : MonoBehaviour
     public bool keepTopmostWhileSnapped = true;
     public float unsnapGraceTime = 0.12f;
     public float unsnapCooldownSeconds = 0.3f;
+    // When true (and the matching setting enableRawWindowDrag is on), dragging
+    // the pet moves the window to follow the grab point freely — no edge
+    // snapping, no guards. The pet can be dropped anywhere on any monitor.
+    public bool enableRawDragFollow = true;
 
     Animator animator;
     AvatarAnimatorController controller;
@@ -34,12 +38,14 @@ public class AvatarHideHandler : MonoBehaviour
     enum Side { None, Left, Right }
     Side snappedSide = Side.None;
 
+    int cursorOffsetX;
     int cursorOffsetY;
     float velX, velY;
     bool smoothingActive;
     bool wasDragging;
     float snappedAt;
     float unsnapCooldownUntil;
+    float lastDragLogTime = -1f;
 
     int dragBaseW;
     int dragBaseH;
@@ -103,6 +109,7 @@ public class AvatarHideHandler : MonoBehaviour
             {
                 dragBaseW = Math.Max(1, wr.Right - wr.Left);
                 dragBaseH = Math.Max(1, wr.Bottom - wr.Top);
+                cursorOffsetX = cp.x - wr.Left;
                 cursorOffsetY = cp.y - wr.Top;
                 smoothingActive = false;
                 velX = 0f;
@@ -116,6 +123,26 @@ public class AvatarHideHandler : MonoBehaviour
         {
             if (!GetCursorPos(out POINT cp)) { wasDragging = controller.isDragging; return; }
             if (!GetWindowRect(unityHWND, out RECT wrCur)) { wasDragging = controller.isDragging; return; }
+
+            bool raw = enableRawDragFollow &&
+                       (SaveLoadHandler.Instance == null || SaveLoadHandler.Instance.data.enableRawWindowDrag);
+
+            if (raw)
+            {
+                // Raw drag: the window follows the grab point freely. No edge
+                // snapping, no snapped-side maintenance, nothing else can yank
+                // the pet. Throttled logging for the placement diagnostic.
+                MoveSmooth(wrCur.Left, wrCur.Top, cp.x - cursorOffsetX, cp.y - cursorOffsetY);
+                if (Time.unscaledTime - lastDragLogTime > 0.2f)
+                {
+                    lastDragLogTime = Time.unscaledTime;
+                    WindowDebugLog.Log("rawdrag cur=(" + cp.x + "," + cp.y +
+                                       ") win=(" + wrCur.Left + "," + wrCur.Top + "," + wrCur.Right + "," + wrCur.Bottom +
+                                       ") off=(" + cursorOffsetX + "," + cursorOffsetY + ")");
+                }
+                wasDragging = controller.isDragging;
+                return;
+            }
 
             IntPtr hmonWin = MonitorFromWindow(unityHWND, MONITOR_DEFAULTTONEAREST);
             RECT monWin = GetMonitorRectFromHandle(hmonWin);

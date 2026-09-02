@@ -200,6 +200,11 @@ public class SaveLoadHandler : MonoBehaviour
         public bool enableWindowSitting = true;
         // "auto" = snap to both edges, "up" = top edge only, "down" = bottom edge only
         public string windowSitEdge = "auto";
+        // When true, dragging the pet moves the window freely to follow the
+        // cursor. Edge-snapping (AvatarHideHandler) and the auto
+        // constrain-to-screens (AvatarWindowHandler) are skipped so the pet
+        // can be placed on any part of any monitor.
+        public bool enableRawWindowDrag = true;
         public bool ambientOcclusion = true;
 
         public float uiHueShift = 0f;

@@ -290,8 +290,16 @@ public class AvatarWindowHandler : MonoBehaviour
                 if (wantTopmost) MacWindowHelper.BringSelfToFront();
             }
 
-            if (snappedHWND == IntPtr.Zero && !controller.isDragging)
-                MacWindowHelper.ConstrainWindowToScreens();
+            bool rawDrag = SaveLoadHandler.Instance != null && SaveLoadHandler.Instance.data.enableRawWindowDrag;
+            if (snappedHWND == IntPtr.Zero && !controller.isDragging && !rawDrag)
+            {
+                // Only auto-recenter the window in legacy (non-raw-drag) mode.
+                // Raw drag mode: the user placed the pet deliberately; never
+                // yank it back to a different monitor/position.
+                bool moved = MacWindowHelper.ConstrainWindowToScreens();
+                if (moved)
+                    WindowDebugLog.Log("ConstrainWindowToScreens moved the window (raw drag off)");
+            }
         }
 #endif
 
