@@ -433,6 +433,8 @@ public class AvatarWindowHandler : MonoBehaviour
     float _rawDragOffsetX, _rawDragOffsetY;
     bool _rawDragGrabbed;
     float _rawDragLogTime = -1f;
+    int _rawDragBaseX, _rawDragBaseY;
+    int _rawGrabX, _rawGrabY;
 
     void HandleRawDrag()
     {
@@ -441,29 +443,34 @@ public class AvatarWindowHandler : MonoBehaviour
 
         if (!_rawDragGrabbed)
         {
-            // First frame of the drag: remember where the grab point is inside
-            // the window (top-left origin).
+            // First frame of the drag: remember window pos + grab point, and
+            // the cursor delta starts at zero (relative drag).
             if (MacWindowHelper.TryGetWindowRect(out RectInt w) &&
                 MacWindowHelper.TryGetCursorPosition(out Vector2Int c))
             {
-                _rawDragOffsetX = c.x - w.x;
-                _rawDragOffsetY = c.y - w.y;
+                _rawDragBaseX = w.x; _rawDragBaseY = w.y;
+                _rawGrabX = c.x; _rawGrabY = c.y;
                 _rawDragGrabbed = true;
-                WindowDebugLog.Log("rawGrab off=(" + _rawDragOffsetX + "," + _rawDragOffsetY + ") win=" + w);
+                WindowDebugLog.Log("rawGrab base=(" + _rawDragBaseX + "," + _rawDragBaseY + ") grab=(" + _rawGrabX + "," + _rawGrabY + ")");
             }
             return;
         }
 
         if (MacWindowHelper.TryGetCursorPosition(out Vector2Int cur))
         {
-            int tx = Mathf.RoundToInt(cur.x - _rawDragOffsetX);
-            int ty = Mathf.RoundToInt(cur.y - _rawDragOffsetY);
+            // Relative drag: window moves by the same delta as the cursor,
+            // even when the cursor is on another monitor. This avoids the
+            // grab-offset tether that stopped the window at the monitor edge.
+            int dx = cur.x - _rawGrabX;
+            int dy = cur.y - _rawGrabY;
+            int tx = _rawDragBaseX + dx;
+            int ty = _rawDragBaseY + dy;
             MacWindowHelper.MoveWindowTopLeft(tx, ty);
 
             if (Time.unscaledTime - _rawDragLogTime > 0.2f)
             {
                 _rawDragLogTime = Time.unscaledTime;
-                WindowDebugLog.Log("rawDrag target=(" + tx + "," + ty + ") cur=(" + cur.x + "," + cur.y + ")");
+                WindowDebugLog.Log("rawDrag target=(" + tx + "," + ty + ") base=(" + _rawDragBaseX + "," + _rawDragBaseY + ") cur=(" + cur.x + "," + cur.y + ")");
             }
         }
 #endif
