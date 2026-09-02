@@ -591,6 +591,11 @@ public class AvatarWindowHandler : MonoBehaviour
     {
         if (Time.unscaledTime < _unsnapCooldownUntil) return;
         if (IsSitBlocked()) return;
+        // Guard zone only matters while re-snapping close to the window we just
+        // unsnapped from. If the player is free-dragging elsewhere (e.g. trying
+        // to place the pet on the other side of the screen), do NOT reject the
+        // drop — that was making parts of the desktop unreachable.
+        if (snappedHWND == IntPtr.Zero) _guardZoneActive = false;
         if (useGuardZone && _guardZoneActive && ComputeZoneDesktop(out float gx, out float gy))
         {
             float dx = gx - _guardCenterDesktop.x;
