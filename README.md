@@ -4,7 +4,7 @@
 
 |  |  |
 |---|---|
-| **This repo** | [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X) |
+| **This repo** | [`freckslaydown-byte/Mate-Engine-Mac-X`](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X) |
 | **Official upstream** (Windows) | [`shinyflvre/Mate-Engine`](https://github.com/shinyflvre/Mate-Engine) |
 | **Secondary upstream** (unfinished macOS) | [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) |
 | **Platform** | macOS 12.0+ · Universal binary (Apple Silicon + Intel) |
@@ -185,7 +185,7 @@ This is a community port — features and future updates depend on the original 
 
 |  |  |
 |---|---|
-| **本リポジトリ** | [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X) |
+| **本リポジトリ** | [`freckslaydown-byte/Mate-Engine-Mac-X`](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X) |
 | **公式元リポジトリ**（Windows） | [`shinyflvre/Mate-Engine`](https://github.com/shinyflvre/Mate-Engine) |
 | **二次元リポジトリ**（未完成のmacOS） | [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) |
 | **対応環境** | macOS 12.0+ · ユニバーサルバイナリ（Apple Silicon + Intel） |
@@ -345,7 +345,7 @@ SIGN_IDENTITY="Developer ID Application: あなたの名前 (TEAMID)" NOTARIZE=1
 
 |  |  |
 |---|---|
-| **本项目** | [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X) |
+| **本项目** | [`freckslaydown-byte/Mate-Engine-Mac-X`](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X) |
 | **官方上游**（Windows） | [`shinyflvre/Mate-Engine`](https://github.com/shinyflvre/Mate-Engine) |
 | **二级上游**（未完成的 macOS 版） | [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) |
 | **平台** | macOS 12.0+ · 通用二进制（Apple Silicon + Intel） |
