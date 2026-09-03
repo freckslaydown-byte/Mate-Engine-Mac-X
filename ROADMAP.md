@@ -46,6 +46,7 @@ The fork starts at `v1.0.0` (2026-08-02). Every milestone lives on its own branc
 | B3 | Convenience / companionship review — multi-monitor placement memory, accessibility | Use cases |
 | B4 | Upstream sync cadence — periodic merge from upstream master | Lineage |
 | B5 | Localization preservation pass — audit all 13 locale tables for completeness, QA the core flows (settings, chat, daemon, window controls) in JA + ZH, and stand up a feedback channel for those audiences | Use cases |
+| B6 | Pause all screen observation while the Mac is locked — cursor-pos, window-occlusion probe, and desktop capture (ambient lights) stop when `com.apple.screenIsLocked@` fires; resume on `screenIsUnlocked`; poll `CGSessionCopyCurrentDictionary()` as fallback. No new permissions. Daemon TTS command channel keeps working | macOS currency / privacy |
 
 ### Backed-out changes (logged for history)
 
