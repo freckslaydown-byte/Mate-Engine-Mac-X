@@ -4,16 +4,18 @@
 
 |  |  |
 |---|---|
-| **This repo** | [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X) |
+| **This repo** | [`freckslaydown-byte/Mate-Engine-Mac-X`](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X) |
+| **Fork source** (macOS) | [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X) |
 | **Official upstream** (Windows) | [`shinyflvre/Mate-Engine`](https://github.com/shinyflvre/Mate-Engine) |
 | **Secondary upstream** (unfinished macOS) | [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) |
 | **Platform** | macOS 12.0+ · Universal binary (Apple Silicon + Intel) |
 | **Engine** | Unity 6000.4.8f1 + native Objective-C plugins |
 | **License** | GNU AGPL v3 & MateProv2 |
+| **Docs** | [ROADMAP.md](ROADMAP.md) (milestones & vision) · [VERSIONING.md](VERSIONING.md) (branching & backout) |
 
-> ⚠️ **Unofficial notice** — This is a community-made, **unofficial** port. The official project targets Windows. Development continues from the unfinished [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) branch. Note that `Marksonthegamer/Mate-Engine-Linux-Port` is a separate, also-unofficial Linux port and is unrelated to this macOS port.
+> ⚠️ **Unofficial notice** — This is a community-made, **unofficial** port. The official project targets Windows. This project is forked from [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X), which itself continues the unfinished [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) branch. Note that `Marksonthegamer/Mate-Engine-Linux-Port` is a separate, also-unofficial Linux port and is unrelated to this macOS port.
 >
-> 🚧 **Work in progress** — This port is still under **active development and will contain bugs**. Features may be incomplete, and not all official (Windows) features are available yet. If you hit a problem, please report it via [Issues](https://github.com/CJackHwang/Mate-Engine-Mac-X/issues).
+> 🚧 **Work in progress** — This port is still under **active development and will contain bugs**. Features may be incomplete, and not all official (Windows) features are available yet. If you hit a problem, please report it via [Issues](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/issues).
 
 ---
 
@@ -33,7 +35,7 @@
 
 Based on the upstream `Prepare 3.4 Features` branch (after X3.3).
 
-> 🚧 **Status: work in progress** — this port is still actively developed and **will have bugs**. Some features are incomplete, and not all official Windows features are available yet. If something breaks, [open an issue](https://github.com/CJackHwang/Mate-Engine-Mac-X/issues).
+> 🚧 **Status: work in progress** — this port is still actively developed and **will have bugs**. Some features are incomplete, and not all official Windows features are available yet. If something breaks, [open an issue](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/issues).
 
 #### 📸 Real-Device Test Screenshots
 
@@ -47,7 +49,8 @@ Based on the upstream `Prepare 3.4 Features` branch (after X3.3).
 |---|---|---|
 | Official upstream | [shinyflvre/Mate-Engine](https://github.com/shinyflvre/Mate-Engine) | Official Windows version by the original author |
 | Secondary upstream | [BNDSer/Mate-Engine-Mac](https://github.com/BNDSer/Mate-Engine-Mac) | Unfinished macOS port: v1 fixed WinAPI for basic macOS use → v2 replaced the LLM backend & added TTS → … → v8 dance-action selection; window-sitting basics; Unity 6000.4.8f1 |
-| This project | [CJackHwang/Mate-Engine-Mac-X](https://github.com/CJackHwang/Mate-Engine-Mac-X) | Continues BNDSer's unfinished work and **completes the macOS port**: build scripts, native plugins, ScreenCaptureKit music dancing, ambient light, full i18n and polish |
+| Fork source | [CJackHwang/Mate-Engine-Mac-X](https://github.com/CJackHwang/Mate-Engine-Mac-X) | Continues BNDSer's unfinished work and **completes the macOS port**: build scripts, native plugins, ScreenCaptureKit music dancing, ambient light, full i18n and polish |
+| This fork | [freckslaydown-byte/Mate-Engine-Mac-X](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X) | Forked from CJackHwang's completed port — the active fork: SuperClaw daemon (handshake + TTS speak), macOS dev loop (`update_macos.sh`), roadmap & versioning governance |
 
 #### ✨ Porting Feature Support
 
@@ -62,22 +65,25 @@ Based on the upstream `Prepare 3.4 Features` branch (after X3.3).
 
 **Core features**
 
-| Feature | Status | Notes |
-|---|---|---|
-| Native macOS | ✅ | Universal binary (arm64 + x86_64), macOS 12.0+ |
-| Transparent borderless always-on-top window | ✅ | Via UniWindowController |
-| Window sitting | ✅ | Sits on the top/bottom edge of windows (`up` / `down` / `auto` modes); absolute occlusion below the sit-line; runtime depth/height fine-tuning |
-| Dance to music | ✅ | ScreenCaptureKit system-audio capture (requires Screen Recording permission); 20 dance clips selectable |
-| Ambient light | ✅ | Follows the desktop color scheme in real time (requires Screen Recording permission); on by default, adaptive brightness; falls back to regular manual lighting without permission |
-| 13-language i18n | ✅ | EN / zh-Hans / zh-Hant / ja / ko / de / es / fr / pl / ru / tr / uk / kk |
-| AI chat | ✅ | LLM backend replaced with the Anthropic API |
-| TTS voice | ✅ | GPT-SoVITS; independent volume control, repeat & interrupt playback |
-| Crash recovery | ✅ | Dedicated crash-recovery scene + temporary empty scene |
-| CJK & Korean font fallback | ✅ | Dynamic font fallback, no more “tofu” boxes |
-| VRM file picker | ✅ | Fixed macOS file-picker line-wrapping that misread VRM as DLC |
-| Launch-window auto-fit | ✅ | Scales to the main display's visible workspace (minus menu bar / Dock) |
-| Smart settings menu | ✅ | Runtime-generated rows, corrected text/control layout |
-| Out-of-box defaults | ✅ | Polished picture, soft ambient light, core features enabled by default |
+| Feature | Status | Notes | Roadmap pillar |
+|---|---|---|---|
+| Native macOS | ✅ | Universal binary (arm64 + x86_64), macOS 12.0+; tracks new macOS releases | macOS currency |
+| Transparent borderless always-on-top window | ✅ | Via UniWindowController | macOS currency |
+| Window sitting | ✅ | Sits on the top/bottom edge of windows (`up` / `down` / `auto` modes); absolute occlusion below the sit-line; runtime depth/height fine-tuning | macOS currency |
+| Dance to music | ✅ | ScreenCaptureKit system-audio capture (requires Screen Recording permission); 20 dance clips selectable | Use cases |
+| Ambient light | ✅ | Follows the desktop color scheme in real time (requires Screen Recording permission); on by default, adaptive brightness; falls back to regular manual lighting without permission | Use cases |
+| 13-language i18n | ✅ | EN / zh-Hans / zh-Hant / ja / ko / de / es / fr / pl / ru / tr / uk / kk — JA/ZH priority | Use cases |
+| AI chat | ✅ | LLM backend replaced with the Anthropic API | Advancing technology |
+| TTS voice | ✅ | GPT-SoVITS; independent volume control, repeat & interrupt playback | Advancing technology |
+| SuperClaw daemon (handshake + TTS speak) | 🚧 | Reports program/hostname/model on startup and model change; remote speak via GPT-SoVITS. On `feature/daemon-handshake` / `feature/daemon-commands`, merges after M2 cleanup | Advancing technology |
+| Crash recovery | ✅ | Dedicated crash-recovery scene + temporary empty scene | macOS currency |
+| CJK & Korean font fallback | ✅ | Dynamic font fallback, no more "tofu" boxes | Use cases |
+| VRM file picker | ✅ | Fixed macOS file-picker line-wrapping that misread VRM as DLC | macOS currency |
+| Launch-window auto-fit | ✅ | Scales to the main display's visible workspace (minus menu bar / Dock) | macOS currency |
+| Smart settings menu | ✅ | Runtime-generated rows, corrected text/control layout | Use cases |
+| Out-of-box defaults | ✅ | Polished picture, soft ambient light, core features enabled by default | Use cases |
+
+🔒 **Privacy by design** — the daemon handshake sends only **program name, hostname, and model info**; screen / mouse / keyboard data never leaves the device.
 
 #### 🆚 Differences from the Official (Windows) Version
 
@@ -97,11 +103,9 @@ Based on the upstream `Prepare 3.4 Features` branch (after X3.3).
 
 **Download from Releases**
 
-1. Open the [Releases](https://github.com/CJackHwang/Mate-Engine-Mac-X/releases) page (Releases panel on the right of the repo).
-2. Download the latest **app bundle archive** (e.g. `MateEngineX-vX.X.X-macOS.zip`) — **not** the `Source code` archive.
-3. Unzip and drag `MateEngineX.app` into `/Applications/` (or anywhere).
+> ⚠️ **No release published yet** — this fork has not published a release artifact yet (the fork's Releases page is empty; `v1.0.0` is inherited from the fork source but has no assets here). Until **M7** ships (see [ROADMAP.md](ROADMAP.md)), **build it yourself** — see the **Build & Run** section below.
 
-> If no release artifacts are available yet, build it yourself — see the **Build & Run** section below.
+Once **M7** ships, this section will walk you through downloading the latest `MateEngineX-vX.X.X-macOS.zip` (and `MateEngineX.dmg`) from the [Releases](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/releases) page and dragging `MateEngineX.app` into `/Applications/`.
 
 **First run**
 
@@ -171,6 +175,7 @@ This is a community port — features and future updates depend on the original 
 
 - [shinyflvre/Mate-Engine](https://github.com/shinyflvre/Mate-Engine) — official upstream, original author
 - [BNDSer/Mate-Engine-Mac](https://github.com/BNDSer/Mate-Engine-Mac) — secondary upstream; foundational macOS porting work (v1–v8, window-sitting basics, LLM/TTS swap)
+- [CJackHwang/Mate-Engine-Mac-X](https://github.com/CJackHwang/Mate-Engine-Mac-X) — fork source; **completed the macOS port** (build scripts, native plugins, ScreenCaptureKit music dancing, ambient light, full i18n)
 - [maoxig/MateEngine-CustomDancePlayer](https://github.com/maoxig/MateEngine-CustomDancePlayer) — community mod: custom dance player
 - Full upstream README (EN/JA/ZH) and the Desktop-Mate feature comparison are in the [official repo](https://github.com/shinyflvre/Mate-Engine)
 
@@ -184,16 +189,17 @@ This is a community port — features and future updates depend on the original 
 
 |  |  |
 |---|---|
-| **本リポジトリ** | [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X) |
+| **本リポジトリ** | [`freckslaydown-byte/Mate-Engine-Mac-X`](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X) |
+| **フォーク元リポジトリ**（macOS） | [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X) |
 | **公式元リポジトリ**（Windows） | [`shinyflvre/Mate-Engine`](https://github.com/shinyflvre/Mate-Engine) |
 | **二次元リポジトリ**（未完成のmacOS） | [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) |
 | **対応環境** | macOS 12.0+ · ユニバーサルバイナリ（Apple Silicon + Intel） |
 | **エンジン** | Unity 6000.4.8f1 + ネイティブ Objective-C プラグイン |
 | **ライセンス** | GNU AGPL v3 & MateProv2 |
 
-> ⚠️ **非公式のお知らせ** — これはコミュニティ製の**非公式**移植です。公式版はWindows向けです。本プロジェクトは、未完成の [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) の作業を引き継いで開発を継続しています。なお、`Marksonthegamer/Mate-Engine-Linux-Port` は別系統の非公式Linux移植であり、このmacOS移植とは無関係です。
+> ⚠️ **非公式のお知らせ** — これはコミュニティ製の**非公式**移植です。公式版はWindows向けです。本プロジェクトは [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X) からのフォークであり、同リポジトリは未完成の [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) の作業を引き継いでいます。なお、`Marksonthegamer/Mate-Engine-Linux-Port` は別系統の非公式Linux移植であり、このmacOS移植とは無関係です。
 >
-> 🚧 **開発中** — 本移植は現在も活発に開発中であり、**バグが含まれています**。一部の機能は未完成で、公式Windows版の全機能はまだ利用できません。問題が発生した場合は [Issues](https://github.com/CJackHwang/Mate-Engine-Mac-X/issues) から報告してください。
+> 🚧 **開発中** — 本移植は現在も活発に開発中であり、**バグが含まれています**。一部の機能は未完成で、公式Windows版の全機能はまだ利用できません。問題が発生した場合は [Issues](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/issues) から報告してください。
 
 ### 📸 実機テストのスクリーンショット
 
@@ -207,7 +213,8 @@ This is a community port — features and future updates depend on the original 
 |---|---|---|
 | 公式元リポジトリ | [shinyflvre/Mate-Engine](https://github.com/shinyflvre/Mate-Engine) | 原作者による公式Windows版 |
 | 二次元リポジトリ | [BNDSer/Mate-Engine-Mac](https://github.com/BNDSer/Mate-Engine-Mac) | 未完成のmacOS移植：v1でWinAPIを修正してmacOSで基本動作 → v2でLLMバックエンド差し替え＆TTS追加 → … → v8でダンスアクション選択；ウィンドウ座りの基礎；Unity 6000.4.8f1 へ更新 |
-| 本プロジェクト | [CJackHwang/Mate-Engine-Mac-X](https://github.com/CJackHwang/Mate-Engine-Mac-X) | BNDSerの未完成作業を引き継ぎ、**macOS移植を完成**：ビルドスクリプト、ネイティブプラグイン、ScreenCaptureKitによる音楽ダンス、アンビエントライト、完全なi18nと仕上げ |
+| フォーク元リポジトリ | [CJackHwang/Mate-Engine-Mac-X](https://github.com/CJackHwang/Mate-Engine-Mac-X) | BNDSerの未完成作業を引き継ぎ、**macOS移植を完成**：ビルドスクリプト、ネイティブプラグイン、ScreenCaptureKitによる音楽ダンス、アンビエントライト、完全なi18nと仕上げ |
+| 本リポジトリ | [freckslaydown-byte/Mate-Engine-Mac-X](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X) | CJackHwangの完成版移植からのフォーク — 現行フォークとして継続：SuperClawデーモン（ハンドシェイク＋TTS発話）、macOS開発ループ（`update_macos.sh`）、ロードマップ＆バージョニング管理 |
 
 ### ✨ 移植機能の対応状況
 
@@ -222,22 +229,25 @@ This is a community port — features and future updates depend on the original 
 
 **コア機能**
 
-| 機能 | 状態 | 説明 |
-|---|---|---|
-| ネイティブ macOS | ✅ | ユニバーサルバイナリ（arm64 + x86_64）、macOS 12.0+ |
-| 透明・枠なし・常に最前面のウィンドウ | ✅ | UniWindowController を使用 |
-| ウィンドウ座り | ✅ | ウィンドウの上/下エッジに座る（`up` / `down` / `auto` の3モード）；座線以下の完全遮蔽；実行時・深さ/高さの微調整 |
-| 音楽に合わせてダンス | ✅ | ScreenCaptureKit によるシステム音声キャプチャ（画面収録権限が必要）；ダンスは20クリップから選択可能 |
-| アンビエントライト | ✅ | デスクトップの配色にリアルタイム追従（画面収録権限が必要）；デフォルトON・明るさ自動調整；権限がない場合は通常の手動ライトにフォールバック |
-| 13言語のローカライズ | ✅ | EN / 簡中 / 繁中 / 日本語 / 韓国語 / 独語 / 西語 / 仏語 / 波語 / 露語 / トルコ語 / ウクライナ語 / カザフ語 |
-| AIチャット | ✅ | LLMバックエンドを Anthropic API に差し替え |
-| TTS音声 | ✅ | GPT-SoVITS；個別音量、繰り返し/割り込み再生に対応 |
-| クラッシュリカバリ | ✅ | 専用のクラッシュリカバリシーン＋一時的な空シーン |
-| 日中韓フォントのフォールバック | ✅ | 動的フォントフォールバックで「豆腐」表示を防止 |
-| VRMファイル選択 | ✅ | macOSのファイル選択ダイアログの改行によりVRMがDLCと誤判定される問題を修正 |
-| 起動ウィンドウの自動サイズ調整 | ✅ | メインディスプレイの可視ワークスペースに合わせて縮小（メニューバー/Dockを除く） |
-| スマート設定メニュー | ✅ | 実行時に動的生成する行、修正されたテキスト/コントロール配置 |
-| 初期設定の最適化 | ✅ | 美しい画面、柔らかいアンビエントライト、コア機能はデフォルトON |
+| 機能 | 状態 | 説明 | ロードマップの柱 |
+|---|---|---|---|
+| ネイティブ macOS | ✅ | ユニバーサルバイナリ（arm64 + x86_64）、macOS 12.0+；新macOSリリースにも追随 | macOS現行性 |
+| 透明・枠なし・常に最前面のウィンドウ | ✅ | UniWindowController を使用 | macOS現行性 |
+| ウィンドウ座り | ✅ | ウィンドウの上/下エッジに座る（`up` / `down` / `auto` の3モード）；座線以下の完全遮蔽；実行時・深さ/高さの微調整 | macOS現行性 |
+| 音楽に合わせてダンス | ✅ | ScreenCaptureKit によるシステム音声キャプチャ（画面収録権限が必要）；ダンスは20クリップから選択可能 | ユースケース |
+| アンビエントライト | ✅ | デスクトップの配色にリアルタイム追従（画面収録権限が必要）；デフォルトON・明るさ自動調整；権限がない場合は通常の手動ライトにフォールバック | ユースケース |
+| 13言語のローカライズ | ✅ | EN / 簡中 / 繁中 / 日本語 / 韓国語 / 独語 / 西語 / 仏語 / 波語 / 露語 / トルコ語 / ウクライナ語 / カザフ語 — 日本語・中国語優先 | ユースケース |
+| AIチャット | ✅ | LLMバックエンドを Anthropic API に差し替え | 技術の進化 |
+| TTS音声 | ✅ | GPT-SoVITS；個別音量、繰り返し/割り込み再生に対応 | 技術の進化 |
+| SuperClaw デーモン（ハンドシェイク＋TTS発話） | 🚧 | 起動時とモデル変更時にプログラム名/ホスト名/モデル情報を報告；GPT-SoVITS によるリモート発話。`feature/daemon-handshake` / `feature/daemon-commands` で開発中、M2 クリーンアップ後に main へマージ | 技術の進化 |
+| クラッシュリカバリ | ✅ | 専用のクラッシュリカバリシーン＋一時的な空シーン | macOS現行性 |
+| 日中韓フォントのフォールバック | ✅ | 動的フォントフォールバックで「豆腐」表示を防止 | ユースケース |
+| VRMファイル選択 | ✅ | macOSのファイル選択ダイアログの改行によりVRMがDLCと誤判定される問題を修正 | macOS現行性 |
+| 起動ウィンドウの自動サイズ調整 | ✅ | メインディスプレイの可視ワークスペースに合わせて縮小（メニューバー/Dockを除く） | macOS現行性 |
+| スマート設定メニュー | ✅ | 実行時に動的生成する行、修正されたテキスト/コントロール配置 | ユースケース |
+| 初期設定の最適化 | ✅ | 美しい画面、柔らかいアンビエントライト、コア機能はデフォルトON | ユースケース |
+
+🔒 **プライバシー設計** — デーモンのハンドシェイクは**プログラム名・ホスト名・モデル情報のみ**を送信；画面・マウス・キーボードのデータが端末の外に出ることはありません。
 
 ### 🆚 公式（Windows）版との違い
 
@@ -257,11 +267,9 @@ This is a community port — features and future updates depend on the original 
 
 **Releases からダウンロード**
 
-1. [Releases](https://github.com/CJackHwang/Mate-Engine-Mac-X/releases) ページを開く（リポジトリ右側のReleases）。
-2. 最新の**アプリバンドルアーカイブ**（例：`MateEngineX-vX.X.X-macOS.zip`）をダウンロード。`Source code`（ソースコード）は**選ばない**でください。
-3. 解凍して `MateEngineX.app` を `/Applications/` にドラッグ＆ドロップ（任意の場所でも可）。
+> ⚠️ **リリース未公開** — 本フォークではまだリリース成果物を公開していません（Releases ページは空です。`v1.0.0` はフォーク元から引き継いだタグで、本リポジトリにはアセットがありません）。**M7** が提供されるまで（[ROADMAP.md](ROADMAP.md) 参照）は、**自分でビルド**してください — 下記の「ビルドと実行」を参照。
 
-> まだリリース成果物が無い場合は、下記「ビルドと実行」を参考に自分でビルドしてください。
+**M7** リリース後は、このセクションで [Releases](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/releases) ページから最新の `MateEngineX-vX.X.X-macOS.zip`（および `MateEngineX.dmg`）をダウンロードし、`MateEngineX.app` を `/Applications/` へドラッグ＆ドロップする手順を案内します。
 
 **初回起動**
 
@@ -331,6 +339,7 @@ SIGN_IDENTITY="Developer ID Application: あなたの名前 (TEAMID)" NOTARIZE=1
 
 - [shinyflvre/Mate-Engine](https://github.com/shinyflvre/Mate-Engine) — 公式元リポジトリ、原作者
 - [BNDSer/Mate-Engine-Mac](https://github.com/BNDSer/Mate-Engine-Mac) — 二次元リポジトリ；macOS移植の基盤作業（v1〜v8、ウィンドウ座りの基礎、LLM/TTSの差し替え）
+- [CJackHwang/Mate-Engine-Mac-X](https://github.com/CJackHwang/Mate-Engine-Mac-X) — フォーク元；**macOS移植を完成**（ビルドスクリプト、ネイティブプラグイン、ScreenCaptureKitによる音楽ダンス、アンビエントライト、完全なi18n）
 - [maoxig/MateEngine-CustomDancePlayer](https://github.com/maoxig/MateEngine-CustomDancePlayer) — コミュニティMod：カスタムダンスプレイヤー
 - 元リポジトリの完全なREADME（EN/JA/ZH）とDesktop Mateとの機能比較は [公式リポジトリ](https://github.com/shinyflvre/Mate-Engine) にあります
 
@@ -344,16 +353,17 @@ SIGN_IDENTITY="Developer ID Application: あなたの名前 (TEAMID)" NOTARIZE=1
 
 |  |  |
 |---|---|
-| **本项目** | [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X) |
+| **本项目** | [`freckslaydown-byte/Mate-Engine-Mac-X`](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X) |
+| **Fork 来源**（macOS） | [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X) |
 | **官方上游**（Windows） | [`shinyflvre/Mate-Engine`](https://github.com/shinyflvre/Mate-Engine) |
 | **二级上游**（未完成的 macOS 版） | [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) |
 | **平台** | macOS 12.0+ · 通用二进制（Apple Silicon + Intel） |
 | **引擎** | Unity 6000.4.8f1 + 原生 Objective-C 插件 |
 | **许可** | GNU AGPL v3 & MateProv2 |
 
-> ⚠️ **非官方声明** — 本项目为社区**非官方**移植，官方版本面向 Windows。本项目接续未完成的 [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) 继续开发。另请注意：`Marksonthegamer/Mate-Engine-Linux-Port` 是独立的非官方 Linux 移植，与本 macOS 移植无关。
+> ⚠️ **非官方声明** — 本项目为社区**非官方**移植，官方版本面向 Windows。本项目 fork 自 [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X)，后者接续未完成的 [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) 继续开发。另请注意：`Marksonthegamer/Mate-Engine-Linux-Port` 是独立的非官方 Linux 移植，与本 macOS 移植无关。
 >
-> 🚧 **仍在开发中** — 本移植项目工作仍在进行，**仍会存在很多 Bug**。部分功能可能不完整，官方 Windows 版的全部功能尚未全部支持。如遇问题，请在 [Issues](https://github.com/CJackHwang/Mate-Engine-Mac-X/issues) 中反馈。
+> 🚧 **仍在开发中** — 本移植项目工作仍在进行，**仍会存在很多 Bug**。部分功能可能不完整，官方 Windows 版的全部功能尚未全部支持。如遇问题，请在 [Issues](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/issues) 中反馈。
 
 ### 📸 实机测试截图
 
@@ -367,7 +377,8 @@ SIGN_IDENTITY="Developer ID Application: あなたの名前 (TEAMID)" NOTARIZE=1
 |---|---|---|
 | 官方上游 | [shinyflvre/Mate-Engine](https://github.com/shinyflvre/Mate-Engine) | 原作者编写的 Windows 官方版 |
 | 二级上游 | [BNDSer/Mate-Engine-Mac](https://github.com/BNDSer/Mate-Engine-Mac) | 未完成的 macOS 移植：v1 修复 WinAPI 使 Mac 基础可用 → v2 替换 LLM 后端、添加 TTS → … → v8 舞蹈动作选择；窗口坐基础；升级 Unity 6000.4.8f1 |
-| 本项目 | [CJackHwang/Mate-Engine-Mac-X](https://github.com/CJackHwang/Mate-Engine-Mac-X) | 接续 BNDSer 的未完成工作，**完成 macOS 原生移植**：构建脚本、原生插件、ScreenCaptureKit 音乐舞蹈、氛围光、完整 i18n 与打磨 |
+| Fork 来源 | [CJackHwang/Mate-Engine-Mac-X](https://github.com/CJackHwang/Mate-Engine-Mac-X) | 接续 BNDSer 的未完成工作，**完成 macOS 原生移植**：构建脚本、原生插件、ScreenCaptureKit 音乐舞蹈、氛围光、完整 i18n 与打磨 |
+| 本项目 | [freckslaydown-byte/Mate-Engine-Mac-X](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X) | fork 自 CJackHwang 的完成版移植 — 作为现行 fork 继续开发：SuperClaw 守护进程（握手 + TTS 语音）、macOS 开发循环（`update_macos.sh`）、路线图与版本管理 |
 
 ### ✨ 移植功能支持情况
 
@@ -382,22 +393,25 @@ SIGN_IDENTITY="Developer ID Application: あなたの名前 (TEAMID)" NOTARIZE=1
 
 **核心功能**
 
-| 功能 | 状态 | 说明 |
-|---|---|---|
-| 原生 macOS 运行 | ✅ | 通用二进制（arm64 + x86_64），macOS 12.0+ |
-| 透明无边框置顶窗口 | ✅ | 通过 UniWindowController 实现 |
-| 窗口坐立 / 吸附 | ✅ | 坐在窗口上/下边缘（`up` / `down` / `auto` 三种模式）；坐线以下绝对遮挡；运行时深度/高度微调 |
-| 随音乐跳舞 | ✅ | ScreenCaptureKit 系统音频捕获（需屏幕录制权限）；20 个舞蹈片段可选 |
-| 氛围光 / 环境光 | ✅ | 实时跟随桌面配色（需屏幕录制权限）；默认开启、亮度自适应；无权限时回退常规手动灯光 |
-| 13 语言本地化 | ✅ | EN / 简中 / 繁中 / 日 / 韩 / 德 / 西 / 法 / 波兰 / 俄 / 土耳其 / 乌克兰 / 哈萨克 |
-| AI 对话 | ✅ | LLM 后端替换为 Anthropic API |
-| 语音合成 TTS | ✅ | GPT-SoVITS；独立音量控制、可重复/打断播放 |
-| 崩溃恢复 | ✅ | 专门的崩溃恢复场景 + 临时空场景 |
-| 中/韩文等字体回退 | ✅ | 动态字体回退，避免“豆腐块” |
-| VRM 文件选择 | ✅ | 修复 macOS 文件选择器换行导致 VRM 被误判为 DLC 的问题 |
-| 开屏窗口自适应 | ✅ | 按主显示器可见工作区缩放（扣除菜单栏/程序坞） |
-| 智能设置菜单 | ✅ | 运行时动态生成的行、修正后的控件布局 |
-| 开箱即用默认参数 | ✅ | 画面精致、氛围灯柔和、核心功能默认开启 |
+| 功能 | 状态 | 说明 | 路线图支柱 |
+|---|---|---|---|
+| 原生 macOS 运行 | ✅ | 通用二进制（arm64 + x86_64），macOS 12.0+；持续适配 macOS 新版本 | macOS 时效 |
+| 透明无边框置顶窗口 | ✅ | 通过 UniWindowController 实现 | macOS 时效 |
+| 窗口坐立 / 吸附 | ✅ | 坐在窗口上/下边缘（`up` / `down` / `auto` 三种模式）；坐线以下绝对遮挡；运行时深度/高度微调 | macOS 时效 |
+| 随音乐跳舞 | ✅ | ScreenCaptureKit 系统音频捕获（需屏幕录制权限）；20 个舞蹈片段可选 | 使用场景 |
+| 氛围光 / 环境光 | ✅ | 实时跟随桌面配色（需屏幕录制权限）；默认开启、亮度自适应；无权限时回退常规手动灯光 | 使用场景 |
+| 13 语言本地化 | ✅ | EN / 简中 / 繁中 / 日 / 韩 / 德 / 西 / 法 / 波兰 / 俄 / 土耳其 / 乌克兰 / 哈萨克 — 优先维护日文与中文 | 使用场景 |
+| AI 对话 | ✅ | LLM 后端替换为 Anthropic API | 技术进步 |
+| 语音合成 TTS | ✅ | GPT-SoVITS；独立音量控制、可重复/打断播放 | 技术进步 |
+| SuperClaw 守护进程（握手 + TTS 语音） | 🚧 | 启动及模型变更时报告程序名/主机名/模型信息；通过 GPT-SoVITS 远程发声。在 `feature/daemon-handshake` / `feature/daemon-commands` 分支开发，M2 清理后合入 main | 技术进步 |
+| 崩溃恢复 | ✅ | 专门的崩溃恢复场景 + 临时空场景 | macOS 时效 |
+| 中/韩文等字体回退 | ✅ | 动态字体回退，避免“豆腐块” | 使用场景 |
+| VRM 文件选择 | ✅ | 修复 macOS 文件选择器换行导致 VRM 被误判为 DLC 的问题 | macOS 时效 |
+| 开屏窗口自适应 | ✅ | 按主显示器可见工作区缩放（扣除菜单栏/程序坞） | macOS 时效 |
+| 智能设置菜单 | ✅ | 运行时动态生成的行、修正后的控件布局 | 使用场景 |
+| 开箱即用默认参数 | ✅ | 画面精致、氛围灯柔和、核心功能默认开启 | 使用场景 |
+
+🔒 **隐私设计** — 守护进程握手仅发送**程序名、主机名、模型信息**；屏幕、鼠标、键盘数据绝不离开设备。
 
 ### 🆚 与官方（Windows）版的差异
 
@@ -417,11 +431,9 @@ SIGN_IDENTITY="Developer ID Application: あなたの名前 (TEAMID)" NOTARIZE=1
 
 **从 Release 下载**
 
-1. 打开 [Releases](https://github.com/CJackHwang/Mate-Engine-Mac-X/releases) 页面（仓库右侧 Releases 区域）。
-2. 下载最新发布的**应用压缩包**（如 `MateEngineX-vX.X.X-macOS.zip`），**不要**下载标记为 `Source code` 的源码包。
-3. 解压，将 `MateEngineX.app` 拖入 `/Applications/`（或任意位置）。
+> ⚠️ **尚未发布** — 本 fork 尚未发布任何 Release 产物（Releases 页面为空；`v1.0.0` 是从 fork 来源继承的标签，在此仓库没有资源）。在 **M7** 发布之前（见 [ROADMAP.md](ROADMAP.md)），请**自行构建** — 参考下方「构建与运行」。
 
-> 如果 Releases 页面暂无可下载产物，请参考下方「构建与运行」自行构建。
+**M7** 发布后，本部分将说明如何从 [Releases](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/releases) 页面下载最新的 `MateEngineX-vX.X.X-macOS.zip`（以及 `MateEngineX.dmg`），并将 `MateEngineX.app` 拖入 `/Applications/`。
 
 **首次启动**
 
@@ -491,5 +503,6 @@ SIGN_IDENTITY="Developer ID Application: 你的名字 (TEAMID)" NOTARIZE=1 ./Too
 
 - [shinyflvre/Mate-Engine](https://github.com/shinyflvre/Mate-Engine) — 官方上游，原作者
 - [BNDSer/Mate-Engine-Mac](https://github.com/BNDSer/Mate-Engine-Mac) — 二级上游，macOS 移植的奠基工作（v1–v8、窗口坐基础、LLM/TTS 替换）
+- [CJackHwang/Mate-Engine-Mac-X](https://github.com/CJackHwang/Mate-Engine-Mac-X) — Fork 来源，**完成 macOS 原生移植**（构建脚本、原生插件、ScreenCaptureKit 音乐舞蹈、氛围光、完整 i18n）
 - [maoxig/MateEngine-CustomDancePlayer](https://github.com/maoxig/MateEngine-CustomDancePlayer) — 社区模组：自定义舞蹈播放器
 - 上游完整的英文 / 日文 / 中文说明与功能对比请见 [官方仓库](https://github.com/shinyflvre/Mate-Engine)
