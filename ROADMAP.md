@@ -30,7 +30,7 @@ The fork starts at `v1.0.0` (2026-08-02). Every milestone lives on its own branc
 | ID | Milestone | Branch | Status |
 |----|-----------|--------|--------|
 | M1 | SuperClaw daemon handshake — report program + hostname + model on startup and model change | `feature/daemon-handshake` | **DONE** (2026-09-01) |
-| M2 | SuperClaw daemon command channel — remote speak via GPT-SoVITS TTS | `feature/daemon-commands` | **CLEANUP NEEDED** — branch still carries the backed-out drag commits; must be cleaned before merge |
+| M2 | SuperClaw daemon command channel — remote speak via GPT-SoVITS TTS | `feature/daemon-commands-no-ui` | **DONE** (2026-09-03) — shipped from `feature/daemon-commands-no-ui`, which carries none of the backed-out drag commits; the dirty `feature/daemon-commands` branch was retired |
 | M3 | macOS dev loop — `update_macos.sh` pull / build / kill / install | `main` | **DONE** (2026-09-02) |
 | M4 | Licensing & third-party compliance — NOTICE.txt, license index, folder fixes | `docs/licensing` | **DONE** (2026-09-02) |
 | M5 | Roadmap & versioning governance — this file + VERSIONING.md | `docs/roadmap` | **DONE** (2026-09-03) |
