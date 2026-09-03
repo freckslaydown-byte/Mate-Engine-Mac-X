@@ -10,6 +10,7 @@
 | **Platform** | macOS 12.0+ · Universal binary (Apple Silicon + Intel) |
 | **Engine** | Unity 6000.4.8f1 + native Objective-C plugins |
 | **License** | GNU AGPL v3 & MateProv2 |
+| **Docs** | [ROADMAP.md](ROADMAP.md) (milestones & vision) · [VERSIONING.md](VERSIONING.md) (branching & backout) |
 
 > ⚠️ **Unofficial notice** — This is a community-made, **unofficial** port. The official project targets Windows. Development continues from the unfinished [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) branch. Note that `Marksonthegamer/Mate-Engine-Linux-Port` is a separate, also-unofficial Linux port and is unrelated to this macOS port.
 >
