@@ -26,6 +26,10 @@ public class SettingsHandlerToggles : MonoBehaviour
     public Toggle enableFeedSystemToggle;
     public Toggle enableRandomAvatarToggle;
     public Toggle enableLocomotionToggle;
+    // SuperClaw daemon link: handshake reporting and command polling.
+    // Cloned at runtime (see EnsureDaemonToggles) if not bound in the scene.
+    public Toggle enableDaemonHandshakeToggle;
+    public Toggle enableDaemonCommandPollingToggle;
 
     [Header("External Objects")]
     public GameObject bloomObject;
@@ -63,6 +67,9 @@ public class SettingsHandlerToggles : MonoBehaviour
         enableFeedSystemToggle?.onValueChanged.AddListener(OnEnableFeedSystemChanged);
         enableRandomAvatarToggle?.onValueChanged.AddListener(OnEnableRandomAvatarChanged);
         enableLocomotionToggle?.onValueChanged.AddListener(OnEnableLocomotionChanged);
+        EnsureDaemonToggles();
+        enableDaemonHandshakeToggle?.onValueChanged.AddListener(OnDaemonHandshakeChanged);
+        enableDaemonCommandPollingToggle?.onValueChanged.AddListener(OnDaemonCommandPollingChanged);
         LoadSettings();
         ApplySettings();
     }
@@ -113,6 +120,28 @@ public class SettingsHandlerToggles : MonoBehaviour
     }
     private void OnEnableRandomAvatarChanged(bool v) { SaveLoadHandler.Instance.data.enableRandomAvatar = v; Save(); }
     private void OnEnableLocomotionChanged(bool v) { SaveLoadHandler.Instance.data.enableLocomotion = v; ApplySettings(); Save(); }
+    private void OnDaemonHandshakeChanged(bool v)
+    {
+        var data = SaveLoadHandler.Instance.data;
+        data.daemonHandshakeEnabled = v;
+        if (v) data.daemonEnabled = true; // lifting any sub-switch also lifts the master
+        if (v && string.IsNullOrEmpty(data.daemonUrl))
+        {
+            Debug.LogWarning("[SettingsHandlerToggles] Daemon handshake enabled but daemonUrl is empty; set the URL in settings.json first.");
+        }
+        Save();
+    }
+    private void OnDaemonCommandPollingChanged(bool v)
+    {
+        var data = SaveLoadHandler.Instance.data;
+        data.daemonCommandPollingEnabled = v;
+        if (v) data.daemonEnabled = true;
+        if (v && string.IsNullOrEmpty(data.daemonUrl))
+        {
+            Debug.LogWarning("[SettingsHandlerToggles] Daemon command polling enabled but daemonUrl is empty; set the URL in settings.json first.");
+        }
+        Save();
+    }
 
     #endregion
 
@@ -181,6 +210,78 @@ public class SettingsHandlerToggles : MonoBehaviour
         }
     }
 
+    // Clone the two SuperClaw daemon toggle rows at runtime (handshake +
+    // command polling) from the dance-transitions row, placed in the free
+    // slots at the bottom of the dance section (rel y=-420 / y=-460; the next
+    // section header sits at rel y=-480, so rows must stay above it).
+    // Same trick as EnsureFollowMusicToggle to avoid hand-editing scene YAML.
+    private void EnsureDaemonToggles()
+    {
+        if ((enableDaemonHandshakeToggle != null && enableDaemonCommandPollingToggle != null)
+            || enableDanceSwitchToggle == null) return;
+        Transform row = enableDanceSwitchToggle.transform;
+        if (row == null || row.parent == null) return;
+
+        if (enableDaemonHandshakeToggle == null)
+            enableDaemonHandshakeToggle = CloneDaemonToggle(row, "DaemonHandshake", -280f,
+                "DAEMON_HANDSHAKE", "SuperClaw 主从握手上报", "开启时向 SuperClaw 守护进程上报程序名、主机名与模型信息。");
+        if (enableDaemonCommandPollingToggle == null)
+            enableDaemonCommandPollingToggle = CloneDaemonToggle(row, "DaemonCommandPolling", -320f,
+                "DAEMON_COMMAND_POLL", "SuperClaw 命令轮询（语音）", "开启时轮询守护进程的命令队列，收到 speak 指令即用 TTS 说话。");
+    }
+
+    private Toggle CloneDaemonToggle(Transform srcRow, string name, float yOffset,
+        string key, string fallback, string tooltipText)
+    {
+        GameObject clone = Instantiate(srcRow.gameObject, srcRow.parent);
+        clone.transform.SetSiblingIndex(srcRow.GetSiblingIndex() + 1);
+        clone.name = name;
+
+        RectTransform rt = clone.GetComponent<RectTransform>();
+        RectTransform srcRT = srcRow as RectTransform;
+        if (rt != null && srcRT != null)
+        {
+            Vector2 pos = srcRT.anchoredPosition;
+            rt.anchoredPosition = new Vector2(pos.x, pos.y + yOffset);
+        }
+
+        Toggle t = clone.GetComponent<Toggle>();
+        if (t != null)
+        {
+            t.onValueChanged.RemoveAllListeners(); // drop cloned handlers
+        }
+
+        foreach (var tmp in clone.GetComponentsInChildren<TMPro.TextMeshProUGUI>(true))
+        {
+            var lse = tmp.GetComponent<LocalizeStringEvent>();
+            if (lse != null) lse.enabled = false;
+            var binder = tmp.GetComponent<LocTextBinder>();
+            if (binder == null) binder = tmp.gameObject.AddComponent<LocTextBinder>();
+            binder.key = key;
+            binder.fallback = fallback;
+            binder.Apply();
+            break;
+        }
+        foreach (var txt in clone.GetComponentsInChildren<UnityEngine.UI.Text>(true))
+        {
+            var lse = txt.GetComponent<LocalizeStringEvent>();
+            if (lse != null) lse.enabled = false;
+            var binder = txt.GetComponent<LocTextBinder>();
+            if (binder == null) binder = txt.gameObject.AddComponent<LocTextBinder>();
+            binder.key = key;
+            binder.fallback = fallback;
+            binder.Apply();
+            break;
+        }
+        var tooltip = clone.GetComponent<UiTooltip>();
+        if (tooltip != null)
+        {
+            tooltip.locKey = key + "_TIP";
+            tooltip.tooltipText = tooltipText;
+        }
+        return t;
+    }
+
     public void LoadSettings()
     {
         var data = SaveLoadHandler.Instance.data;
@@ -204,6 +305,8 @@ public class SettingsHandlerToggles : MonoBehaviour
         enableFeedSystemToggle?.SetIsOnWithoutNotify(SaveLoadHandler.Instance.data.enableFeedSystem);
         enableRandomAvatarToggle?.SetIsOnWithoutNotify(SaveLoadHandler.Instance.data.enableRandomAvatar);
         enableLocomotionToggle?.SetIsOnWithoutNotify(data.enableLocomotion);
+        enableDaemonHandshakeToggle?.SetIsOnWithoutNotify(data.daemonEnabled && data.daemonHandshakeEnabled);
+        enableDaemonCommandPollingToggle?.SetIsOnWithoutNotify(data.daemonEnabled && data.daemonCommandPollingEnabled);
         ApplySettings();
     }
 
@@ -289,6 +392,8 @@ public class SettingsHandlerToggles : MonoBehaviour
         enableFeedSystemToggle?.SetIsOnWithoutNotify(false);
         enableRandomAvatarToggle?.SetIsOnWithoutNotify(false);
         enableLocomotionToggle?.SetIsOnWithoutNotify(false);
+        enableDaemonHandshakeToggle?.SetIsOnWithoutNotify(false);
+        enableDaemonCommandPollingToggle?.SetIsOnWithoutNotify(false);
         SaveLoadHandler.Instance.data.enableLocomotion = false;
 
 
@@ -311,6 +416,9 @@ public class SettingsHandlerToggles : MonoBehaviour
         data.enableAutoMemoryTrim = false;
         data.enableFeedSystem = false;
         data.enableMinecraftMessages = false;
+        data.daemonEnabled = false;
+        data.daemonHandshakeEnabled = true;
+        data.daemonCommandPollingEnabled = true;
         SaveLoadHandler.Instance.SaveToDisk();
         ApplySettings();
     }
