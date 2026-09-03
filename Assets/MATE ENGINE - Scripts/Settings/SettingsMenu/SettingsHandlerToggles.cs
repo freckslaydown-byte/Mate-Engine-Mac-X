@@ -224,10 +224,10 @@ public class SettingsHandlerToggles : MonoBehaviour
 
         if (enableDaemonHandshakeToggle == null)
             enableDaemonHandshakeToggle = CloneDaemonToggle(row, "DaemonHandshake", -295f,
-                "DAEMON_HANDSHAKE", "SuperClaw 握手上报", "开启时向 SuperClaw 守护进程上报程序名、主机名与模型信息。");
+                "DAEMON_HANDSHAKE", "SuperClaw Handshake", "When on, reports program name, hostname and model info to the SuperClaw daemon.");
         if (enableDaemonCommandPollingToggle == null)
             enableDaemonCommandPollingToggle = CloneDaemonToggle(row, "DaemonCommandPolling", -325f,
-                "DAEMON_COMMAND_POLL", "SuperClaw 语音轮询", "开启时轮询守护进程的命令队列，收到 speak 指令即用 TTS 说话。");
+                "DAEMON_COMMAND_POLL", "SuperClaw Command Poll (TTS)", "When on, polls the daemon command queue and speaks via TTS when a speak command arrives.");
     }
 
     private Toggle CloneDaemonToggle(Transform srcRow, string name, float yOffset,
@@ -255,11 +255,13 @@ public class SettingsHandlerToggles : MonoBehaviour
         {
             var lse = tmp.GetComponent<LocalizeStringEvent>();
             if (lse != null) lse.enabled = false;
+            // Do NOT bind a localization-table key: DAEMON_HANDSHAKE / etc. are not
+            // entries in the Languages (UI) table, and Unity logs
+            // "No translation found for ..." for missing keys. Set the text
+            // directly (fallback); locale changes won't rewrite these two rows.
             var binder = tmp.GetComponent<LocTextBinder>();
-            if (binder == null) binder = tmp.gameObject.AddComponent<LocTextBinder>();
-            binder.key = key;
-            binder.fallback = fallback;
-            binder.Apply();
+            if (binder != null) binder.key = "";
+            tmp.text = fallback;
             // Free space below the dance section is only ~80px tall; slim the
             // cloned label so two rows fit without touching the rows above or
             // the "= WINDOW FEATURE" header below.
@@ -271,16 +273,16 @@ public class SettingsHandlerToggles : MonoBehaviour
             var lse = txt.GetComponent<LocalizeStringEvent>();
             if (lse != null) lse.enabled = false;
             var binder = txt.GetComponent<LocTextBinder>();
-            if (binder == null) binder = txt.gameObject.AddComponent<LocTextBinder>();
-            binder.key = key;
-            binder.fallback = fallback;
-            binder.Apply();
+            if (binder != null) binder.key = "";
+            txt.text = fallback;
             break;
         }
         var tooltip = clone.GetComponent<UiTooltip>();
         if (tooltip != null)
         {
-            tooltip.locKey = key + "_TIP";
+            // Set tooltipText only; leave locKey empty so the tooltip never
+            // tries to look up a non-existent key in the localization table.
+            tooltip.locKey = "";
             tooltip.tooltipText = tooltipText;
         }
         return t;
