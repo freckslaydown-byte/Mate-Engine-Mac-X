@@ -35,6 +35,7 @@ The fork starts at `v1.0.0` (2026-08-02). Every milestone lives on its own branc
 | M4 | Licensing & third-party compliance — NOTICE.txt, license index, folder fixes | `docs/licensing` | **DONE** (2026-09-02) |
 | M5 | Roadmap & versioning governance — this file + VERSIONING.md | `docs/roadmap` | **IN PROGRESS** |
 | M6 | Land the chat/drag revert (`ede57bf5`) so no milestone branch carries backed-out work | `fix/revert-drag-chat` | **QUEUED** |
+| M7 | First release from this fork — publish `v1.1.0` (`main` = tag + universal build + `MateEngineX-vX.Y.Z-macOS.zip` + DMG + GitHub Release, so README "Download & Usage" becomes true) | `main` (release) | **QUEUED** |
 
 ### Backlog (proposed, unstarted)
 

@@ -105,8 +105,22 @@ git reset --hard HEAD~N
 
 ## Releases
 
-- `main` is the only line that receives tags: `vX.Y.Z` (currently `v1.0.0`).
+- `main` is the only line that receives tags: `vX.Y.Z` (currently `v1.0.0` inherited from the fork source; **no release artifacts published on this fork yet**).
 - Urgent fixes to a released version: `hotfix/<slug>` → merge to `main` → tag the patch.
+- Publish a release only from `main`.
+
+**Release checklist (M7 — first release from this fork)**
+
+1. **Verify `main`** — merge the roadmap (M5) and daemon work (M1/M2) first so the release reflects this fork's direction (see ROADMAP.md).
+2. **Tag** — `git tag vX.Y.Z` from `main` (bump from the previously released version; M7 ships `v1.1.0`).
+3. **Build** — run `./Tools/build_macos.sh` on a Mac; verify the universal-binary arch check passes.
+4. **Package** — `PACKAGE_DMG=1 ./Tools/build_macos.sh` produces `MateEngineX.dmg`; also zip the `.app` (e.g. `ditto -c -k --keepParent`) and name it `MateEngineX-vX.Y.Z-macOS.zip` to match the README.
+5. **Document** — note the macOS version tested, the Unity version, and what changed since the previous release.
+6. **Publish** — create the GitHub Release on the fork (`freckslaydown-byte/Mate-Engine-Mac-X`), attach both assets, mark **Latest**, keep drafts out.
+7. **Verify** — Release page returns 200, both assets download, checksums match (`shasum -a 256`).
+8. **Update** — mark M7 DONE in ROADMAP.md; update README "Download & Usage" if artifact names changed.
+
+> Reverting a release: use the tag, not `git reset`. Fix forward with a `hotfix/<slug>` → bump to the next patch. Never delete a release tag that users may have downloaded.
 
 ## Docs governance
 
