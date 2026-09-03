@@ -65,22 +65,25 @@ Based on the upstream `Prepare 3.4 Features` branch (after X3.3).
 
 **Core features**
 
-| Feature | Status | Notes |
-|---|---|---|
-| Native macOS | ✅ | Universal binary (arm64 + x86_64), macOS 12.0+ |
-| Transparent borderless always-on-top window | ✅ | Via UniWindowController |
-| Window sitting | ✅ | Sits on the top/bottom edge of windows (`up` / `down` / `auto` modes); absolute occlusion below the sit-line; runtime depth/height fine-tuning |
-| Dance to music | ✅ | ScreenCaptureKit system-audio capture (requires Screen Recording permission); 20 dance clips selectable |
-| Ambient light | ✅ | Follows the desktop color scheme in real time (requires Screen Recording permission); on by default, adaptive brightness; falls back to regular manual lighting without permission |
-| 13-language i18n | ✅ | EN / zh-Hans / zh-Hant / ja / ko / de / es / fr / pl / ru / tr / uk / kk |
-| AI chat | ✅ | LLM backend replaced with the Anthropic API |
-| TTS voice | ✅ | GPT-SoVITS; independent volume control, repeat & interrupt playback |
-| Crash recovery | ✅ | Dedicated crash-recovery scene + temporary empty scene |
-| CJK & Korean font fallback | ✅ | Dynamic font fallback, no more “tofu” boxes |
-| VRM file picker | ✅ | Fixed macOS file-picker line-wrapping that misread VRM as DLC |
-| Launch-window auto-fit | ✅ | Scales to the main display's visible workspace (minus menu bar / Dock) |
-| Smart settings menu | ✅ | Runtime-generated rows, corrected text/control layout |
-| Out-of-box defaults | ✅ | Polished picture, soft ambient light, core features enabled by default |
+| Feature | Status | Notes | Roadmap pillar |
+|---|---|---|---|
+| Native macOS | ✅ | Universal binary (arm64 + x86_64), macOS 12.0+; tracks new macOS releases | macOS currency |
+| Transparent borderless always-on-top window | ✅ | Via UniWindowController | macOS currency |
+| Window sitting | ✅ | Sits on the top/bottom edge of windows (`up` / `down` / `auto` modes); absolute occlusion below the sit-line; runtime depth/height fine-tuning | macOS currency |
+| Dance to music | ✅ | ScreenCaptureKit system-audio capture (requires Screen Recording permission); 20 dance clips selectable | Use cases |
+| Ambient light | ✅ | Follows the desktop color scheme in real time (requires Screen Recording permission); on by default, adaptive brightness; falls back to regular manual lighting without permission | Use cases |
+| 13-language i18n | ✅ | EN / zh-Hans / zh-Hant / ja / ko / de / es / fr / pl / ru / tr / uk / kk — JA/ZH priority | Use cases |
+| AI chat | ✅ | LLM backend replaced with the Anthropic API | Advancing technology |
+| TTS voice | ✅ | GPT-SoVITS; independent volume control, repeat & interrupt playback | Advancing technology |
+| SuperClaw daemon (handshake + TTS speak) | 🚧 | Reports program/hostname/model on startup and model change; remote speak via GPT-SoVITS. On `feature/daemon-handshake` / `feature/daemon-commands`, merges after M2 cleanup | Advancing technology |
+| Crash recovery | ✅ | Dedicated crash-recovery scene + temporary empty scene | macOS currency |
+| CJK & Korean font fallback | ✅ | Dynamic font fallback, no more "tofu" boxes | Use cases |
+| VRM file picker | ✅ | Fixed macOS file-picker line-wrapping that misread VRM as DLC | macOS currency |
+| Launch-window auto-fit | ✅ | Scales to the main display's visible workspace (minus menu bar / Dock) | macOS currency |
+| Smart settings menu | ✅ | Runtime-generated rows, corrected text/control layout | Use cases |
+| Out-of-box defaults | ✅ | Polished picture, soft ambient light, core features enabled by default | Use cases |
+
+🔒 **Privacy by design** — the daemon handshake sends only **program name, hostname, and model info**; screen / mouse / keyboard data never leaves the device.
 
 #### 🆚 Differences from the Official (Windows) Version
 
@@ -228,22 +231,25 @@ This is a community port — features and future updates depend on the original 
 
 **コア機能**
 
-| 機能 | 状態 | 説明 |
-|---|---|---|
-| ネイティブ macOS | ✅ | ユニバーサルバイナリ（arm64 + x86_64）、macOS 12.0+ |
-| 透明・枠なし・常に最前面のウィンドウ | ✅ | UniWindowController を使用 |
-| ウィンドウ座り | ✅ | ウィンドウの上/下エッジに座る（`up` / `down` / `auto` の3モード）；座線以下の完全遮蔽；実行時・深さ/高さの微調整 |
-| 音楽に合わせてダンス | ✅ | ScreenCaptureKit によるシステム音声キャプチャ（画面収録権限が必要）；ダンスは20クリップから選択可能 |
-| アンビエントライト | ✅ | デスクトップの配色にリアルタイム追従（画面収録権限が必要）；デフォルトON・明るさ自動調整；権限がない場合は通常の手動ライトにフォールバック |
-| 13言語のローカライズ | ✅ | EN / 簡中 / 繁中 / 日本語 / 韓国語 / 独語 / 西語 / 仏語 / 波語 / 露語 / トルコ語 / ウクライナ語 / カザフ語 |
-| AIチャット | ✅ | LLMバックエンドを Anthropic API に差し替え |
-| TTS音声 | ✅ | GPT-SoVITS；個別音量、繰り返し/割り込み再生に対応 |
-| クラッシュリカバリ | ✅ | 専用のクラッシュリカバリシーン＋一時的な空シーン |
-| 日中韓フォントのフォールバック | ✅ | 動的フォントフォールバックで「豆腐」表示を防止 |
-| VRMファイル選択 | ✅ | macOSのファイル選択ダイアログの改行によりVRMがDLCと誤判定される問題を修正 |
-| 起動ウィンドウの自動サイズ調整 | ✅ | メインディスプレイの可視ワークスペースに合わせて縮小（メニューバー/Dockを除く） |
-| スマート設定メニュー | ✅ | 実行時に動的生成する行、修正されたテキスト/コントロール配置 |
-| 初期設定の最適化 | ✅ | 美しい画面、柔らかいアンビエントライト、コア機能はデフォルトON |
+| 機能 | 状態 | 説明 | ロードマップの柱 |
+|---|---|---|---|
+| ネイティブ macOS | ✅ | ユニバーサルバイナリ（arm64 + x86_64）、macOS 12.0+；新macOSリリースにも追随 | macOS現行性 |
+| 透明・枠なし・常に最前面のウィンドウ | ✅ | UniWindowController を使用 | macOS現行性 |
+| ウィンドウ座り | ✅ | ウィンドウの上/下エッジに座る（`up` / `down` / `auto` の3モード）；座線以下の完全遮蔽；実行時・深さ/高さの微調整 | macOS現行性 |
+| 音楽に合わせてダンス | ✅ | ScreenCaptureKit によるシステム音声キャプチャ（画面収録権限が必要）；ダンスは20クリップから選択可能 | ユースケース |
+| アンビエントライト | ✅ | デスクトップの配色にリアルタイム追従（画面収録権限が必要）；デフォルトON・明るさ自動調整；権限がない場合は通常の手動ライトにフォールバック | ユースケース |
+| 13言語のローカライズ | ✅ | EN / 簡中 / 繁中 / 日本語 / 韓国語 / 独語 / 西語 / 仏語 / 波語 / 露語 / トルコ語 / ウクライナ語 / カザフ語 — 日本語・中国語優先 | ユースケース |
+| AIチャット | ✅ | LLMバックエンドを Anthropic API に差し替え | 技術の進化 |
+| TTS音声 | ✅ | GPT-SoVITS；個別音量、繰り返し/割り込み再生に対応 | 技術の進化 |
+| SuperClaw デーモン（ハンドシェイク＋TTS発話） | 🚧 | 起動時とモデル変更時にプログラム名/ホスト名/モデル情報を報告；GPT-SoVITS によるリモート発話。`feature/daemon-handshake` / `feature/daemon-commands` で開発中、M2 クリーンアップ後に main へマージ | 技術の進化 |
+| クラッシュリカバリ | ✅ | 専用のクラッシュリカバリシーン＋一時的な空シーン | macOS現行性 |
+| 日中韓フォントのフォールバック | ✅ | 動的フォントフォールバックで「豆腐」表示を防止 | ユースケース |
+| VRMファイル選択 | ✅ | macOSのファイル選択ダイアログの改行によりVRMがDLCと誤判定される問題を修正 | macOS現行性 |
+| 起動ウィンドウの自動サイズ調整 | ✅ | メインディスプレイの可視ワークスペースに合わせて縮小（メニューバー/Dockを除く） | macOS現行性 |
+| スマート設定メニュー | ✅ | 実行時に動的生成する行、修正されたテキスト/コントロール配置 | ユースケース |
+| 初期設定の最適化 | ✅ | 美しい画面、柔らかいアンビエントライト、コア機能はデフォルトON | ユースケース |
+
+🔒 **プライバシー設計** — デーモンのハンドシェイクは**プログラム名・ホスト名・モデル情報のみ**を送信；画面・マウス・キーボードのデータが端末の外に出ることはありません。
 
 ### 🆚 公式（Windows）版との違い
 
@@ -391,22 +397,25 @@ SIGN_IDENTITY="Developer ID Application: あなたの名前 (TEAMID)" NOTARIZE=1
 
 **核心功能**
 
-| 功能 | 状态 | 说明 |
-|---|---|---|
-| 原生 macOS 运行 | ✅ | 通用二进制（arm64 + x86_64），macOS 12.0+ |
-| 透明无边框置顶窗口 | ✅ | 通过 UniWindowController 实现 |
-| 窗口坐立 / 吸附 | ✅ | 坐在窗口上/下边缘（`up` / `down` / `auto` 三种模式）；坐线以下绝对遮挡；运行时深度/高度微调 |
-| 随音乐跳舞 | ✅ | ScreenCaptureKit 系统音频捕获（需屏幕录制权限）；20 个舞蹈片段可选 |
-| 氛围光 / 环境光 | ✅ | 实时跟随桌面配色（需屏幕录制权限）；默认开启、亮度自适应；无权限时回退常规手动灯光 |
-| 13 语言本地化 | ✅ | EN / 简中 / 繁中 / 日 / 韩 / 德 / 西 / 法 / 波兰 / 俄 / 土耳其 / 乌克兰 / 哈萨克 |
-| AI 对话 | ✅ | LLM 后端替换为 Anthropic API |
-| 语音合成 TTS | ✅ | GPT-SoVITS；独立音量控制、可重复/打断播放 |
-| 崩溃恢复 | ✅ | 专门的崩溃恢复场景 + 临时空场景 |
-| 中/韩文等字体回退 | ✅ | 动态字体回退，避免“豆腐块” |
-| VRM 文件选择 | ✅ | 修复 macOS 文件选择器换行导致 VRM 被误判为 DLC 的问题 |
-| 开屏窗口自适应 | ✅ | 按主显示器可见工作区缩放（扣除菜单栏/程序坞） |
-| 智能设置菜单 | ✅ | 运行时动态生成的行、修正后的控件布局 |
-| 开箱即用默认参数 | ✅ | 画面精致、氛围灯柔和、核心功能默认开启 |
+| 功能 | 状态 | 说明 | 路线图支柱 |
+|---|---|---|---|
+| 原生 macOS 运行 | ✅ | 通用二进制（arm64 + x86_64），macOS 12.0+；持续适配 macOS 新版本 | macOS 时效 |
+| 透明无边框置顶窗口 | ✅ | 通过 UniWindowController 实现 | macOS 时效 |
+| 窗口坐立 / 吸附 | ✅ | 坐在窗口上/下边缘（`up` / `down` / `auto` 三种模式）；坐线以下绝对遮挡；运行时深度/高度微调 | macOS 时效 |
+| 随音乐跳舞 | ✅ | ScreenCaptureKit 系统音频捕获（需屏幕录制权限）；20 个舞蹈片段可选 | 使用场景 |
+| 氛围光 / 环境光 | ✅ | 实时跟随桌面配色（需屏幕录制权限）；默认开启、亮度自适应；无权限时回退常规手动灯光 | 使用场景 |
+| 13 语言本地化 | ✅ | EN / 简中 / 繁中 / 日 / 韩 / 德 / 西 / 法 / 波兰 / 俄 / 土耳其 / 乌克兰 / 哈萨克 — 优先维护日文与中文 | 使用场景 |
+| AI 对话 | ✅ | LLM 后端替换为 Anthropic API | 技术进步 |
+| 语音合成 TTS | ✅ | GPT-SoVITS；独立音量控制、可重复/打断播放 | 技术进步 |
+| SuperClaw 守护进程（握手 + TTS 语音） | 🚧 | 启动及模型变更时报告程序名/主机名/模型信息；通过 GPT-SoVITS 远程发声。在 `feature/daemon-handshake` / `feature/daemon-commands` 分支开发，M2 清理后合入 main | 技术进步 |
+| 崩溃恢复 | ✅ | 专门的崩溃恢复场景 + 临时空场景 | macOS 时效 |
+| 中/韩文等字体回退 | ✅ | 动态字体回退，避免“豆腐块” | 使用场景 |
+| VRM 文件选择 | ✅ | 修复 macOS 文件选择器换行导致 VRM 被误判为 DLC 的问题 | macOS 时效 |
+| 开屏窗口自适应 | ✅ | 按主显示器可见工作区缩放（扣除菜单栏/程序坞） | macOS 时效 |
+| 智能设置菜单 | ✅ | 运行时动态生成的行、修正后的控件布局 | 使用场景 |
+| 开箱即用默认参数 | ✅ | 画面精致、氛围灯柔和、核心功能默认开启 | 使用场景 |
+
+🔒 **隐私设计** — 守护进程握手仅发送**程序名、主机名、模型信息**；屏幕、鼠标、键盘数据绝不离开设备。
 
 ### 🆚 与官方（Windows）版的差异
 
