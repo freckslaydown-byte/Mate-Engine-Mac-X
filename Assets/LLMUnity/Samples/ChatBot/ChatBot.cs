@@ -75,11 +75,6 @@ namespace LLMUnitySamples
         private BubbleUI playerUI, aiUI;
         private bool warmUpDone = false;
         private int lastBubbleOutsideFOV = -1;
-        private int widgetSide = 1; // 0 = hug left (draw right), 1 = hug right (draw left)
-        private int lastLoggedSide = -1;
-        private float lastLoggedSideTime = -1f;
-        private int pendingSide = -1;          // side being considered (awaiting debounce)
-        private float pendingSideSince = -1f;  // when pendingSide first appeared
 
         // AI bubble click-to-speak: maps bubble RectTransform to its text
         private readonly List<(RectTransform rt, System.Func<string> getText)> aiBubbleClickTargets = new();
@@ -194,158 +189,9 @@ namespace LLMUnitySamples
             if (avatarAnimator != null) avatarAnimator.SetBool(isTalkingHash, false);
         }
 
-        /// <summary>
-        /// The horizontal side the whole chat widget hugs:
-        /// 0 = anchored left (draws right), 1 = anchored right (draws left).
-        /// Works out whether the app window sits on the left or right half of
-        /// the primary monitor and picks the side that points the widget into
-        /// the open desktop space (away from the screen edge the window hugs).
-        /// Includes hysteresis (won't flip near the monitor center) and a
-        /// debounce (side must hold ~0.4s before it is applied) so a jittery
-        /// window-position read cannot make the widget flicker.
-        /// </summary>
-        const float SideHysteresisMargin = 80f;   // px from monitor center before a flip counts
-        const float SideDebounceSeconds = 0.4f;   // how long the new side must hold
-
-        int GetWidgetSide()
-        {
-            int side = widgetSide;
-            string reason = null;
-            float monCenterX = 0f, winCenterX = 0f;
-            Vector3 vp = default;
-
-            // 1) Preferred: app window position vs primary monitor center
-            try
-            {
-                var uwc = Kirurobo.UniWindowController.current;
-                if (uwc == null)
-                {
-                    reason = "uwc-null";
-                }
-                else if (uwc.windowSize.x <= 0f || uwc.windowSize.y <= 0f)
-                {
-                    reason = "window-size-not-ready (" + uwc.windowSize.x + "x" + uwc.windowSize.y + ")";
-                }
-                else
-                {
-                    RectInt primary = MonitorHelper.GetPrimaryMonitorRect();
-                    if (primary.width <= 0 || primary.height <= 0)
-                    {
-                        reason = "primary-invalid (" + primary.x + "," + primary.y + " " + primary.width + "x" + primary.height + ")";
-                    }
-                    else
-                    {
-                        Vector2 winPos = uwc.windowPosition;
-                        winCenterX = winPos.x + uwc.windowSize.x * 0.5f;
-                        monCenterX = primary.x + (float)primary.width * 0.5f;
-                        float offset = winCenterX - monCenterX;
-                        if (offset < -SideHysteresisMargin) side = 0;      // firmly left half  -> draw right
-                        else if (offset > SideHysteresisMargin) side = 1;   // firmly right half -> draw left
-                        else side = widgetSide;                             // near center: keep current
-                        reason = "window-side (" + winPos.x + "+" + uwc.windowSize.x * 0.5f + " off=" + offset.ToString("0") + " -> " + side + ")";
-                    }
-                }
-            }
-            catch (System.Exception e)
-            {
-                reason = "exception: " + e.Message;
-            }
-
-            // 2) Fallback: model position within the camera viewport (same hysteresis)
-            if (side == widgetSide && reason != null)
-            {
-                int fallbackSide = widgetSide;
-                bool usedFallback = false;
-                if (avatarAnimator == null)
-                {
-                    reason = "avatar-null";
-                }
-                else
-                {
-                    Camera cam = targetCamera != null ? targetCamera : Camera.main;
-                    if (cam != null)
-                    {
-                        vp = cam.WorldToViewportPoint(avatarAnimator.transform.position);
-                        if (vp.z > 0f)
-                        {
-                            // vp.x == 0.5 exactly is also ambiguous: keep current side
-                            if (vp.x < 0.5f - 0.05f) fallbackSide = 0;
-                            else if (vp.x > 0.5f + 0.05f) fallbackSide = 1;
-                            else fallbackSide = widgetSide;
-                            usedFallback = true;
-                        }
-                    }
-                }
-                if (usedFallback)
-                {
-                    side = fallbackSide;
-                    reason = "model-viewport (" + vp.x + ")";
-                }
-                else
-                {
-                    reason = reason + ", no-fallback-usable";
-                }
-            }
-
-            // Throttled diagnostics: log when the side changes or once per 10s
-            if (side != lastLoggedSide || Time.realtimeSinceStartup - lastLoggedSideTime > 10f)
-            {
-                lastLoggedSide = side;
-                lastLoggedSideTime = Time.realtimeSinceStartup;
-                LogWidget("side=" + side + " reason=" + reason);
-            }
-            return side;
-        }
-
-        void LogWidget(string msg)
-        {
-            try
-            {
-                string p = System.IO.Path.Combine(Application.persistentDataPath, "chatwidget.log");
-                System.IO.File.AppendAllText(p, System.DateTime.Now.ToString("HH:mm:ss") + " " + msg + "\n");
-            }
-            catch (System.Exception)
-            {
-            }
-        }
-
-        /// <summary>
-        /// Repositions every bubble and the input field to hug the given side.
-        /// Keeps each element's current position/size, flipping only the anchor
-        /// and the sign of the horizontal offset.
-        /// </summary>
-        void ApplyWidgetSide(int side)
-        {
-            if (side == widgetSide) return;
-            widgetSide = side;
-            playerUI.leftPosition = side;
-            aiUI.leftPosition = side;
-
-            foreach (Bubble b in chatBubbles)
-                ReAnchorToSide(b.GetRectTransform(), side);
-
-            if (inputBubble != null)
-                ReAnchorToSide(inputBubble.GetRectTransform(), side);
-        }
-
-        void ReAnchorToSide(RectTransform rt, int side)
-        {
-            if (rt == null) return;
-            Vector2 ap = rt.anchoredPosition;
-            rt.pivot = new Vector2(side, rt.pivot.y);
-            rt.anchorMin = new Vector2(side, rt.anchorMin.y);
-            rt.anchorMax = new Vector2(side, rt.anchorMax.y);
-            ap.x = Mathf.Abs(ap.x) * (side == 1 ? -1f : 1f);
-            rt.anchoredPosition = ap;
-        }
-
         Bubble AddBubble(string message, bool isPlayerMessage)
         {
-            int side = GetWidgetSide();
-            if (side != widgetSide) ApplyWidgetSide(side);
-            BubbleUI ui = isPlayerMessage ? playerUI : aiUI;
-            ui.leftPosition = side;
-            Bubble bubble = new Bubble(chatContainer, ui, isPlayerMessage ? "PlayerBubble" : "AIBubble", message);
+            Bubble bubble = new Bubble(chatContainer, isPlayerMessage ? playerUI : aiUI, isPlayerMessage ? "PlayerBubble" : "AIBubble", message);
             chatBubbles.Add(bubble);
             bubble.OnResize(MarkLayoutDirty);
 
@@ -527,26 +373,6 @@ namespace LLMUnitySamples
         void Update()
         {
             RefreshAvatarIfChanged();
-
-            // Keep the whole widget (input + all bubbles) on the same side as the model
-            int side = GetWidgetSide();
-            if (side != widgetSide)
-            {
-                // Debounce: the new side must hold for SideDebounceSeconds before applying
-                if (side != pendingSide)
-                {
-                    pendingSide = side;
-                    pendingSideSince = Time.realtimeSinceStartup;
-                }
-                else if (Time.realtimeSinceStartup - pendingSideSince >= SideDebounceSeconds)
-                {
-                    ApplyWidgetSide(side);
-                }
-            }
-            else
-            {
-                pendingSide = -1;
-            }
 
             if (!inputBubble.inputFocused() && warmUpDone)
             {

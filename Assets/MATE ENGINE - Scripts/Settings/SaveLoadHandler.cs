@@ -67,7 +67,6 @@ public class SaveLoadHandler : MonoBehaviour
         // 启动时不再把窗口强制设为显示器原生像素分辨率（Retina 下 Display.main.systemWidth/
         // systemHeight 是像素、窗口却按点缩放，会导致开屏窗口高度超出屏幕）。改为延迟到首帧
         // 把窗口调整到主显示器可见工作区大小：宽度保持全屏、高度自适应可见区域。
-        // 但如果用户手动选了 Normal/Big/Small，尊重那个选择，不要每启动都覆盖成全宽。
         StartCoroutine(FitWindowToVisibleScreen());
 #endif
     }
@@ -102,25 +101,6 @@ public class SaveLoadHandler : MonoBehaviour
         if (vw <= 0 || vh <= 0) { vw = primary.width; vh = primary.height; }
         vw = Mathf.Min(vw, primary.width);
         vh = Mathf.Min(vh, primary.height);
-
-        // Respect an explicit manual window size (Normal/Big/Small). Only use the
-        // full visible area when the user hasn't chosen a size (or wants full).
-        // Normal = 1536x1024, Big = 2048x1536, Small = 768x512 (see AvatarSettingsMenu).
-        if (data != null)
-        {
-            Vector2 manual = Vector2.zero;
-            switch (data.windowSizeState)
-            {
-                case SettingsData.WindowSizeState.Big: manual = new Vector2(2048, 1536); break;
-                case SettingsData.WindowSizeState.Small: manual = new Vector2(768, 512); break;
-                default: manual = new Vector2(1536, 1024); break; // Normal
-            }
-            if (manual.x > 0f && manual.x < vw && manual.y > 0f && manual.y < vh)
-            {
-                vw = Mathf.RoundToInt(manual.x);
-                vh = Mathf.RoundToInt(manual.y);
-            }
-        }
 
         uwc.windowSize = new Vector2(vw, vh);
         float screenH = MacWindowHelper.GetGlobalScreenHeight();
@@ -220,11 +200,6 @@ public class SaveLoadHandler : MonoBehaviour
         public bool enableWindowSitting = true;
         // "auto" = snap to both edges, "up" = top edge only, "down" = bottom edge only
         public string windowSitEdge = "auto";
-        // When true, dragging the pet moves the window freely to follow the
-        // cursor. Edge-snapping (AvatarHideHandler) and the auto
-        // constrain-to-screens (AvatarWindowHandler) are skipped so the pet
-        // can be placed on any part of any monitor.
-        public bool enableRawWindowDrag = true;
         public bool ambientOcclusion = true;
 
         public float uiHueShift = 0f;

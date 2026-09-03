@@ -162,34 +162,13 @@ public static class MacWindowHelper
                 break;
             }
         }
-        // Only pull the window back if it is *almost completely* off every
-        // monitor. A window whose center falls on a monitor gap (or has a
-        // sliver off the edge) is still intentionally placed by the user and
-        // must not be snapped back — that made the right portion of the
-        // primary monitor unreachable when the pet window was large.
-        const int minVisiblePx = 32;
-        if (RectIntersectsAnyMonitor(rect, monitors, minVisiblePx))
-            return false;
-        if (centerVisible)
+        if (overlap > 0 && centerVisible)
             return false;
 
         int x = best.x + Mathf.RoundToInt((best.width - rect.width) * 0.5f);
         int y = best.y + Mathf.RoundToInt((best.height - rect.height) * 0.4f);
         MoveWindowTopLeft(x, y);
         return true;
-    }
-
-    static bool RectIntersectsAnyMonitor(RectInt rect, List<RectInt> monitors, int minVisiblePx)
-    {
-        for (int i = 0; i < monitors.Count; i++)
-        {
-            RectInt m = monitors[i];
-            int visibleW = Mathf.Min(rect.x + rect.width, m.x + m.width) - Mathf.Max(rect.x, m.x);
-            int visibleH = Mathf.Min(rect.y + rect.height, m.y + m.height) - Mathf.Max(rect.y, m.y);
-            if (visibleW >= minVisiblePx && visibleH >= minVisiblePx)
-                return true;
-        }
-        return false;
     }
 
     public static List<RectInt> GetMonitors()

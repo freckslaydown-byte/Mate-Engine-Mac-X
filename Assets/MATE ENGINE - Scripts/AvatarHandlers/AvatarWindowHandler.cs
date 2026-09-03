@@ -129,8 +129,6 @@ public class AvatarWindowHandler : MonoBehaviour
     float _guardRadiusSq;
     void Start()
     {
-        WindowDebugLog.StartupDiagnostics();
-        WindowDebugLog.Log("AvatarWindowHandler.Start rawDrag=" + (SaveLoadHandler.Instance != null && SaveLoadHandler.Instance.data.enableRawWindowDrag));
 #if UNITY_STANDALONE_WIN
         unityHWND = Process.GetCurrentProcess().MainWindowHandle;
         _currentPid = GetCurrentProcessId();
@@ -292,16 +290,8 @@ public class AvatarWindowHandler : MonoBehaviour
                 if (wantTopmost) MacWindowHelper.BringSelfToFront();
             }
 
-            bool rawDrag = SaveLoadHandler.Instance != null && SaveLoadHandler.Instance.data.enableRawWindowDrag;
-            if (snappedHWND == IntPtr.Zero && !controller.isDragging && !rawDrag)
-            {
-                // Only auto-recenter the window in legacy (non-raw-drag) mode.
-                // Raw drag mode: the user placed the pet deliberately; never
-                // yank it back to a different monitor/position.
-                bool moved = MacWindowHelper.ConstrainWindowToScreens();
-                if (moved)
-                    WindowDebugLog.Log("ConstrainWindowToScreens moved the window (raw drag off)");
-            }
+            if (snappedHWND == IntPtr.Zero && !controller.isDragging)
+                MacWindowHelper.ConstrainWindowToScreens();
         }
 #endif
 
@@ -369,36 +359,9 @@ public class AvatarWindowHandler : MonoBehaviour
 #endif
         if (controller.isDragging)
         {
-            bool rawDragNow = SaveLoadHandler.Instance != null && SaveLoadHandler.Instance.data.enableRawWindowDrag;
-            bool altHeld = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
-
-            if (rawDragNow && !altHeld)
-            {
-                // Raw-drag mode, no modifier: ALWAYS a free placement drag.
-                // Clear any lingering window-snap so nothing can pin the pet
-                // to a remembered window edge on drop, then follow the cursor.
-                if (snappedHWND != IntPtr.Zero && !IsStillNearSnappedWindow())
-                    ClearSnapAndHide();
-                HandleRawDrag();
-            }
-            else if (rawDragNow && snappedHWND == IntPtr.Zero)
-            {
-                // Alt held, not snapped yet: allow window-sit snapping.
-                if (_canSitHold && DraggedPastSnapThreshold()) TrySnap();
-            }
-            else if (rawDragNow && !IsStillNearSnappedWindow())
-            {
-                // Alt held but dragged far from the snapped window: drop the snap.
-                SetGuardZoneFromCurrent(); ClearSnapAndHide(true);
-            }
-            else if (rawDragNow)
-            {
-                // Alt held and still near the snapped window: keep sitting.
-                FollowSnapped(true);
-            }
-            else if (!rawDragNow && snappedHWND == IntPtr.Zero) { if (_canSitHold && DraggedPastSnapThreshold()) TrySnap(); }
-            else if (!rawDragNow && macSpaceTransition) { _snapSmoothingActive = false; _snapVelX = _snapVelY = 0f; }
-            else if (!rawDragNow && !IsStillNearSnappedWindow()) { SetGuardZoneFromCurrent(); ClearSnapAndHide(true); }
+            if (snappedHWND == IntPtr.Zero) { if (_canSitHold && DraggedPastSnapThreshold()) TrySnap(); }
+            else if (macSpaceTransition) { _snapSmoothingActive = false; _snapVelX = _snapVelY = 0f; }
+            else if (!IsStillNearSnappedWindow()) { SetGuardZoneFromCurrent(); ClearSnapAndHide(true); }
             else FollowSnapped(true);
         }
         else if (!controller.isDragging && snappedHWND != IntPtr.Zero && !macSpaceTransition) FollowSnapped(false);
@@ -443,100 +406,8 @@ public class AvatarWindowHandler : MonoBehaviour
             }
         }
         wasDragging = controller.isDragging;
-        if (!controller.isDragging && _rawDragGrabbed)
-            LateUpdateDropLog();
     }
     void LateUpdate() { UpdateOccluderQuadsFrameSync(); }
-
-    // ── Raw drag: pet follows cursor freely ──────────────────────────────────
-    float _rawDragOffsetX, _rawDragOffsetY;
-    bool _rawDragGrabbed;
-    float _rawDragLogTime = -1f;
-
-void HandleRawDrag()
-    {
-#if UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
-        if (!controller.isDragging) { _rawDragGrabbed = false; return; }
-
-        if (!_rawDragGrabbed)
-        {
-            // First frame of the drag: remember the grab offset (where the
-            // cursor is relative to the window's top-left), not the absolute
-            // window pos. Each subsequent frame the window is placed so that
-            // this offset stays under the cursor (drag-to-cursor).
-            if (MacWindowHelper.TryGetWindowRect(out RectInt w) &&
-                MacWindowHelper.TryGetCursorPosition(out Vector2Int c))
-            {
-                _rawDragOffsetX = c.x - w.x;
-                _rawDragOffsetY = c.y - w.y;
-                _rawDragGrabbed = true;
-                WindowDebugLog.Log("rawGrab off=(" + _rawDragOffsetX + "," + _rawDragOffsetY + ") win=(" + w.x + "," + w.y + "," + w.width + ")");
-            }
-            return;
-        }
-
-        if (MacWindowHelper.TryGetCursorPosition(out Vector2Int cur))
-        {
-            // Drag-to-cursor: window's top-left = cursor - grab offset, so the
-            // model stays under the pointer. Clamped to keep it on the desktop.
-            int tx = cur.x - (int)_rawDragOffsetX;
-            int ty = cur.y - (int)_rawDragOffsetY;
-
-            // Clamp to desktop bounds so the model is never pushed off the
-            // right of the primary into void.
-            try
-            {
-                if (MacWindowHelper.TryGetWindowRect(out RectInt w))
-                {
-                    var mons = MacWindowHelper.GetMonitors();
-                    int minX = int.MaxValue, maxX = int.MinValue;
-                    for (int i = 0; i < mons.Count; i++)
-                    {
-                        minX = Mathf.Min(minX, mons[i].x);
-                        maxX = Mathf.Max(maxX, mons[i].x + mons[i].width);
-                    }
-                    if (maxX > minX)
-                    {
-                        int maxLeft = Mathf.Max(minX, maxX - w.width);
-                        tx = Mathf.Clamp(tx, minX, maxLeft);
-                    }
-                }
-            }
-            catch (System.Exception)
-            {
-            }
-
-            MacWindowHelper.MoveWindowTopLeft(tx, ty);
-
-            if (Time.unscaledTime - _rawDragLogTime > 0.5f)
-            {
-                _rawDragLogTime = Time.unscaledTime;
-                WindowDebugLog.Log("rawDrag target=(" + tx + "," + ty + ") cur=(" + cur.x + "," + cur.y + ")");
-            }
-        }
-#endif
-    }
-
-    void LateUpdateDropLog()
-    {
-        if (_dropLogRunning) return; // atomic guard: never stack coroutines
-        _dropLogRunning = true;
-        StartCoroutine(DropLogCoroutine());
-    }
-
-    bool _dropLogRunning;
-
-    System.Collections.IEnumerator DropLogCoroutine()
-    {
-        if (MacWindowHelper.TryGetWindowRect(out RectInt w1) &&
-            MacWindowHelper.TryGetCursorPosition(out Vector2Int c1))
-            WindowDebugLog.Log("drop win=" + w1 + " cur=" + c1);
-        yield return new WaitForSecondsRealtime(0.5f);
-        if (_rawDragGrabbed && MacWindowHelper.TryGetWindowRect(out RectInt w2))
-            WindowDebugLog.Log("drop+0.5s win=" + w2);
-        _rawDragGrabbed = false;
-        _dropLogRunning = false;
-    }
     bool DraggedPastSnapThreshold()
     {
 #if UNITY_STANDALONE_WIN
@@ -720,11 +591,6 @@ void HandleRawDrag()
     {
         if (Time.unscaledTime < _unsnapCooldownUntil) return;
         if (IsSitBlocked()) return;
-        // Guard zone only matters while re-snapping close to the window we just
-        // unsnapped from. If the player is free-dragging elsewhere (e.g. trying
-        // to place the pet on the other side of the screen), do NOT reject the
-        // drop — that was making parts of the desktop unreachable.
-        if (snappedHWND == IntPtr.Zero) _guardZoneActive = false;
         if (useGuardZone && _guardZoneActive && ComputeZoneDesktop(out float gx, out float gy))
         {
             float dx = gx - _guardCenterDesktop.x;

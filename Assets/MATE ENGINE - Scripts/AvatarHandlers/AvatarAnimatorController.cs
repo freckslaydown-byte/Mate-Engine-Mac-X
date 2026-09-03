@@ -34,8 +34,6 @@ public class AvatarAnimatorController : MonoBehaviour
     private static readonly int isDancingParam = Animator.StringToHash("isDancing");
     private static readonly int idleIndexParam = Animator.StringToHash("IdleIndex");
 
-    private float cursorOutsideTimer; // macOS stuck-drag recovery
-
     private MMDevice defaultDevice;
     private MMDeviceEnumerator enumerator;
     private Coroutine soundCheckCoroutine, idleTransitionCoroutine, danceTransitionCoroutine;
@@ -209,98 +207,6 @@ public class AvatarAnimatorController : MonoBehaviour
             SetDancing(false);
         }
         if (Input.GetMouseButtonUp(0)) mouseHeld = false;
-#if UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
-        // Stuck-drag recovery (macOS): if a drag loses the mouse-up (e.g. the
-        // cursor leaves the window, or another app like Slack is brought
-        // frontmost over us mid-drag), Unity never sees the release and
-        // isDragging stays stuck forever. Detect it natively so we can
-        // force-release even while another app has focus.
-        if (isDragging && mouseHeld)
-        {
-            bool stuck = false;
-            string why = null;
-            Vector2Int cur = default;
-            bool gotCur = MacWindowHelper.TryGetCursorPosition(out cur);
-
-            // (a) App no longer frontmost while we think we're dragging.
-            if (MacWindowHelper.IsAppFocused() == false)
-            {
-                stuck = true;
-                why = "app-not-focused";
-            }
-
-            // (b) Cursor left every monitor region.
-            if (!stuck && gotCur)
-            {
-                bool inside = false;
-                var mons = MacWindowHelper.GetMonitors();
-                for (int i = 0; i < mons.Count; i++)
-                {
-                    RectInt m = mons[i];
-                    if (cur.x >= m.x && cur.x < m.x + m.width &&
-                        cur.y >= m.y && cur.y < m.y + m.height)
-                    { inside = true; break; }
-                }
-                if (!inside)
-                {
-                    stuck = true;
-                    why = "cursor-off-monitors";
-                }
-            }
-
-            // (c) Window is blocked at a desktop/monitor edge (can't follow the
-            //     cursor any further) — release so the drag self-heals instead
-            //     of flickering at the edge until the user rescues the mouse.
-            if (!stuck && gotCur &&
-                MacWindowHelper.TryGetWindowRect(out RectInt w))
-            {
-                var mons = MacWindowHelper.GetMonitors();
-                int minX = int.MaxValue, maxX = int.MinValue;
-                for (int i = 0; i < mons.Count; i++)
-                {
-                    minX = Mathf.Min(minX, mons[i].x);
-                    maxX = Mathf.Max(maxX, mons[i].x + mons[i].width);
-                }
-                if (maxX > minX)
-                {
-                    bool atRightLimit = (w.x + w.width) >= (maxX - 1);
-                    bool atLeftLimit = w.x <= minX;
-                    // Only consider it blocked if the cursor is trying to go
-                    // beyond the edge we're pinned at (it's not just resting).
-                    if (atRightLimit && cur.x > (maxX - 2))
-                    {
-                        stuck = true;
-                        why = "window-blocked-right";
-                    }
-                    else if (atLeftLimit && cur.x < (minX + 2))
-                    {
-                        stuck = true;
-                        why = "window-blocked-left";
-                    }
-                }
-            }
-
-            if (stuck)
-            {
-                cursorOutsideTimer += Time.unscaledDeltaTime;
-                if (cursorOutsideTimer > 0.25f)
-                {
-                    mouseHeld = false;
-                    dragLockTimer = 0f;
-                    SetDragging(false);
-                    WindowDebugLog.Log("stuckDragRelease reason=" + why);
-                }
-            }
-            else
-            {
-                cursorOutsideTimer = 0f;
-            }
-        }
-        else
-        {
-            cursorOutsideTimer = 0f;
-        }
-#endif
         if (dragLockTimer > 0f)
         {
             dragLockTimer -= Time.deltaTime;
