@@ -15,7 +15,7 @@
 
 > ⚠️ **Unofficial notice** — This is a community-made, **unofficial** port. The official project targets Windows. This project is forked from [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X), which itself continues the unfinished [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) branch. Note that `Marksonthegamer/Mate-Engine-Linux-Port` is a separate, also-unofficial Linux port and is unrelated to this macOS port.
 >
-> 🚧 **Work in progress** — This port is still under **active development and will contain bugs**. Features may be incomplete, and not all official (Windows) features are available yet. If you hit a problem, please report it via [Issues](https://github.com/CJackHwang/Mate-Engine-Mac-X/issues).
+> 🚧 **Work in progress** — This port is still under **active development and will contain bugs**. Features may be incomplete, and not all official (Windows) features are available yet. If you hit a problem, please report it via [Issues](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/issues).
 
 ---
 
@@ -35,7 +35,7 @@
 
 Based on the upstream `Prepare 3.4 Features` branch (after X3.3).
 
-> 🚧 **Status: work in progress** — this port is still actively developed and **will have bugs**. Some features are incomplete, and not all official Windows features are available yet. If something breaks, [open an issue](https://github.com/CJackHwang/Mate-Engine-Mac-X/issues).
+> 🚧 **Status: work in progress** — this port is still actively developed and **will have bugs**. Some features are incomplete, and not all official Windows features are available yet. If something breaks, [open an issue](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/issues).
 
 #### 📸 Real-Device Test Screenshots
 
@@ -103,7 +103,7 @@ Based on the upstream `Prepare 3.4 Features` branch (after X3.3).
 
 **Download from Releases**
 
-1. Open the [Releases](https://github.com/CJackHwang/Mate-Engine-Mac-X/releases) page (Releases panel on the right of the repo).
+1. Open the [Releases](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/releases) page (Releases panel on the right of the repo).
 2. Download the latest **app bundle archive** (e.g. `MateEngineX-vX.X.X-macOS.zip`) — **not** the `Source code` archive.
 3. Unzip and drag `MateEngineX.app` into `/Applications/` (or anywhere).
 
@@ -201,7 +201,7 @@ This is a community port — features and future updates depend on the original 
 
 > ⚠️ **非公式のお知らせ** — これはコミュニティ製の**非公式**移植です。公式版はWindows向けです。本プロジェクトは [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X) からのフォークであり、同リポジトリは未完成の [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) の作業を引き継いでいます。なお、`Marksonthegamer/Mate-Engine-Linux-Port` は別系統の非公式Linux移植であり、このmacOS移植とは無関係です。
 >
-> 🚧 **開発中** — 本移植は現在も活発に開発中であり、**バグが含まれています**。一部の機能は未完成で、公式Windows版の全機能はまだ利用できません。問題が発生した場合は [Issues](https://github.com/CJackHwang/Mate-Engine-Mac-X/issues) から報告してください。
+> 🚧 **開発中** — 本移植は現在も活発に開発中であり、**バグが含まれています**。一部の機能は未完成で、公式Windows版の全機能はまだ利用できません。問題が発生した場合は [Issues](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/issues) から報告してください。
 
 ### 📸 実機テストのスクリーンショット
 
@@ -269,7 +269,7 @@ This is a community port — features and future updates depend on the original 
 
 **Releases からダウンロード**
 
-1. [Releases](https://github.com/CJackHwang/Mate-Engine-Mac-X/releases) ページを開く（リポジトリ右側のReleases）。
+1. [Releases](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/releases) ページを開く（リポジトリ右側のReleases）。
 2. 最新の**アプリバンドルアーカイブ**（例：`MateEngineX-vX.X.X-macOS.zip`）をダウンロード。`Source code`（ソースコード）は**選ばない**でください。
 3. 解凍して `MateEngineX.app` を `/Applications/` にドラッグ＆ドロップ（任意の場所でも可）。
 
@@ -367,7 +367,7 @@ SIGN_IDENTITY="Developer ID Application: あなたの名前 (TEAMID)" NOTARIZE=1
 
 > ⚠️ **非官方声明** — 本项目为社区**非官方**移植，官方版本面向 Windows。本项目 fork 自 [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X)，后者接续未完成的 [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) 继续开发。另请注意：`Marksonthegamer/Mate-Engine-Linux-Port` 是独立的非官方 Linux 移植，与本 macOS 移植无关。
 >
-> 🚧 **仍在开发中** — 本移植项目工作仍在进行，**仍会存在很多 Bug**。部分功能可能不完整，官方 Windows 版的全部功能尚未全部支持。如遇问题，请在 [Issues](https://github.com/CJackHwang/Mate-Engine-Mac-X/issues) 中反馈。
+> 🚧 **仍在开发中** — 本移植项目工作仍在进行，**仍会存在很多 Bug**。部分功能可能不完整，官方 Windows 版的全部功能尚未全部支持。如遇问题，请在 [Issues](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/issues) 中反馈。
 
 ### 📸 实机测试截图
 
@@ -435,7 +435,7 @@ SIGN_IDENTITY="Developer ID Application: あなたの名前 (TEAMID)" NOTARIZE=1
 
 **从 Release 下载**
 
-1. 打开 [Releases](https://github.com/CJackHwang/Mate-Engine-Mac-X/releases) 页面（仓库右侧 Releases 区域）。
+1. 打开 [Releases](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/releases) 页面（仓库右侧 Releases 区域）。
 2. 下载最新发布的**应用压缩包**（如 `MateEngineX-vX.X.X-macOS.zip`），**不要**下载标记为 `Source code` 的源码包。
 3. 解压，将 `MateEngineX.app` 拖入 `/Applications/`（或任意位置）。
 
