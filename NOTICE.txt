@@ -1,8 +1,94 @@
 NOTICE
 
-This software includes third-party components:
+This software includes third-party components. Each component is licensed under
+its own terms; the license texts are located alongside the component in the
+path listed. Where an upstream project publishes its own NOTICE/attribution,
+that file is retained and referenced below.
 
-- Qwen 2.5 1.5b LLM (Apache License 2.0)
+LLM / model runtimes
+--------------------
+- LLMUnity (Unity LLM integration) — MIT License
+  Copyright (c) 2023 Undream AI
+  Path: Assets/LLMUnity/LICENSE.md
+  Additional notices: Assets/LLMUnity/Third Party Notices.md
+  (llama.cpp — MIT; llamafile — Apache License 2.0; USearch — Apache License 2.0)
+- USearch (vector search, used by LLMUnity RAG) — Apache License 2.0
+  Path: Assets/LLMUnity/Runtime/RAG/usearch/LICENSE
+- Qwen 2.5 1.5b LLM — Apache License 2.0
   Source: https://huggingface.co/Qwen/Qwen2.5-1.5B
+  Path: Third Party Licenses/Qwen 2.5 1.5b/LICENSE.txt
+- Llama 3.2 — Llama 3.2 Community License Agreement (Meta Platforms, Inc.)
+  Path: Assets/StreamingAssets/LLAMA 3.2 COMMUNITY LICENSE.txt
+  Required notice: "Llama 3.2 is licensed under the Llama 3.2 Community License,
+  Copyright © Meta Platforms, Inc. All Rights Reserved."
 
-See Third Party Licenses/Qwen 2.5 1.5b/LICENSE.txt for full license text.
+VRM / glTF
+----------
+- VRM (UniVRM / com.vrmc.vrm, VRM-0.x importer) — MIT License
+  Copyright (c) 2020 VRM Consortium
+  Path: Assets/MATE ENGINE - Packages/VRM/LICENSE.md
+- VRM-1.0 (UniVRM-1.x / com.vrmc.vrm, VRM-1.0 importer + MToon10) — MIT License
+  Copyright (c) 2020 VRM Consortium
+  Path: Assets/MATE ENGINE - Packages/VRM10/LICENSE.md
+- UniGLTF — MIT License
+  Copyright (c) 2018 ousttrue
+  Path: Assets/MATE ENGINE - Packages/UniGLTF/LICENSE.md
+- MToon (VRM) — MIT License
+  Copyright (c) 2018 Masataka SUMI
+  Path: Assets/MATE ENGINE - Packages/VRM/MToon/LICENSE
+
+Shaders
+-------
+- lilToon — MIT License
+  Copyright (c) 2020-present lilxyzw
+  Path: Assets/MATE ENGINE - Shaders/jp.lilxyzw.liltoon-1.8.5/LICENSE
+- Poiyomi Toon Shader — MIT License
+  Copyright (c) 2023 Poiyomi Inc.
+  Path: Assets/MATE ENGINE - Shaders/com.poiyomi.toon-9.2.79/LICENSE
+- ThryEditor (Poiyomi tooling) — MIT License
+  Copyright (c) 2022 Thryrallo
+  Path: Assets/MATE ENGINE - Shaders/com.poiyomi.toon-9.2.79/_PoiyomiShaders/Scripts/ThryEditor/LICENSE
+- PoiTexturePacker — MIT License
+  Copyright (c) 2016 Joshua Holmer
+  Path: Assets/MATE ENGINE - Shaders/com.poiyomi.toon-9.2.79/_PoiyomiShaders/Scripts/poi-tools/Editor/PoiTexturePacker/LICENSE.txt
+- kage (kage-BRP) — MIT License
+  Copyright (c) 2022 Ending Hsiao
+  Path: Assets/MATE ENGINE - Shaders/kage-master/kage-master/kage-BRP/LICENSE
+
+Window / OS integration
+-----------------------
+- UniWindowController — MIT License
+  Copyright (c) 2020 Kirurobo
+  Path: Assets/MATE ENGINE - Packages/Kirurobo/UniWindowController/LICENSE.md
+
+Steam / Discord
+---------------
+- Steamworks.NET — MIT License
+  Copyright (c) 2013-2022 Riley Labrecque
+  Path: Assets/MATE ENGINE - Packages/com.rlabrecque.steamworks.net/LICENSE.md
+- Discord RPC (Unity) — MIT License
+  Copyright (c) 2023 Lachee
+  Path: Assets/DiscordRPC/LICENSE
+
+.NET / NuGet packages
+---------------------
+- Newtonsoft.Json — MIT License
+  Copyright (c) 2007 James Newton-King
+  Path: Assets/Packages/Newtonsoft.Json.13.0.3/LICENSE.md
+- NAudio — MIT License
+  Copyright (c) 2020 Mark Heath
+  Path: Assets/Packages/NAudio.2.2.1/license.txt
+- Tomlyn — BSD 2-Clause License
+  Copyright (c) 2018 Alexandre Mutel
+  Path: Assets/Packages/Tomlyn.0.19.0/LICENSE.txt
+- System.Security.Principal.Windows / System.Security.AccessControl — MIT License
+  Copyright (c) .NET Foundation and Contributors
+  Path: Assets/Packages/System.Security.Principal.Windows.4.7.0/LICENSE.TXT
+        Assets/Packages/System.Security.AccessControl.4.7.0/LICENSE.TXT
+- NuGet for Unity — MIT License
+  Copyright (c) 2018 Patrick McCarthy
+  Path: Assets/MATE ENGINE - Packages/NuGet/LICENSE
+
+See each component's own NOTICE / THIRD-PARTY-NOTICES files for further terms.
+See Third Party Licenses/ for the additional third-party license texts bundled
+with this repository.
