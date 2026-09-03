@@ -34,7 +34,7 @@ The fork starts at `v1.0.0` (2026-08-02). Every milestone lives on its own branc
 | M3 | macOS dev loop — `update_macos.sh` pull / build / kill / install | `main` | **DONE** (2026-09-02) |
 | M4 | Licensing & third-party compliance — NOTICE.txt, license index, folder fixes | `docs/licensing` | **DONE** (2026-09-02) |
 | M5 | Roadmap & versioning governance — this file + VERSIONING.md | `docs/roadmap` | **DONE** (2026-09-03) |
-| M6 | Land the chat/drag revert (`ede57bf5`) so no milestone branch carries backed-out work | `fix/revert-drag-chat` | **QUEUED** |
+| M6 | Land the chat/drag revert (`ede57bf5`) so no milestone branch carries backed-out work | `fix/revert-drag-chat` | **CANCELLED** (2026-09-03) — superseded: `feature/daemon-commands` (the only branch carrying the backed-out work) was deleted, so nothing remains to revert on `main` |
 | M7 | First release from this fork — publish `v1.1.0` (`main` = tag + universal build + `MateEngineX-vX.Y.Z-macOS.zip` + DMG + GitHub Release, so README "Download & Usage" becomes true) | `main` (release) | **QUEUED** |
 
 ### Backlog (proposed, unstarted)
