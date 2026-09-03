@@ -30,6 +30,30 @@ Milestones keep the repo's direction legible; fixes keep it healthy. Mixing the 
 
 **Cardinal rule:** milestone branches carry *only* their milestone. Fixes, hotfixes, and experiments never ride along on a milestone branch — and features never sneak into fix branches.
 
+## Issues & triage
+
+**Tracker:** all issues live on the fork's own tracker — [`freckslaydown-byte/Mate-Engine-Mac-X/issues`](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/issues). Bugs in this fork are never filed on the upstream trackers. `CJackHwang/Mate-Engine-Mac-X` remains the fork source and lineage reference, but its Issues/Releases pages are *not* used by this project's users.
+
+**Labels**
+
+| Label | Meaning | Resulting lane |
+|-------|---------|----------------|
+| `bug` | Shipped behavior is wrong | `fix/<slug>` → revertible merge |
+| `hotfix` | Urgent bug in a released tag | `hotfix/<slug>` → merge to `main` + tag patch |
+| `enhancement` | New or extended capability | Roadmap backlog → `feature/<milestone>` |
+| `localization` | Translation gap or locale regression | Ship blocker — must land in all 13 locales (JA/ZH priority) |
+| `macos-version` | Broken/affected by a macOS release | `fix/<slug>` under the macOS-currency pillar |
+| `docs` | Documentation defect | `docs/<topic>` |
+
+**Lifecycle**
+
+1. **Report** — user opens an issue using the template from ROADMAP.md.
+2. **Triage** — a maintainer labels it, maps it to a lane and a roadmap pillar, and decides whether it is a confirmed defect or needs more info.
+3. **Fix** — confirmed defect spawns `fix/<slug>` (one concern, one commit, revertible via `git revert -m 1`). Enhancements enter the roadmap backlog first.
+4. **Merge** — `--no-ff` into `main`; the merge SHA is recorded so the change stays a single revertable unit.
+5. **Close** — the fix/feature resolves the issue; the maintainer closes it, referencing the merge SHA.
+6. **Back out (if needed)** — if the fix proves detrimental, revert the merge (see above). The issue is reopened with a note; the backout is logged in ROADMAP.md's backed-out table.
+
 ## Backout strategy: Git Revert
 
 ### Fixes and hotfixes

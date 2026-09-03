@@ -64,3 +64,28 @@ Before any change, answer:
 3. **Revertible?** Can it be undone with one `git revert`? If not, split it up.
 4. **Documented?** Milestones update this file when they ship. Reverted fixes get logged in the table above.
 5. **Localized?** Any user-facing string change updates all 13 locale tables (JA + ZH priority). If a translation can't be provided for a new string, the feature waits — localization is a ship blocker, not a follow-up.
+
+### Issue report template
+
+Use this when opening an issue on the fork's tracker (see Issues & triage in [VERSIONING.md](VERSIONING.md)). Fill in what you can — a well-classified report triages faster.
+
+```markdown
+**Summary** <!-- one line: what's wrong -->
+
+**Environment**
+- macOS version:
+- Chip: Apple Silicon / Intel
+- App version (and build if known):
+- Unity version (only if building from source):
+
+**Reproduction**
+1. <!-- steps -->
+2. <!-- ... -->
+
+**Expected** <!-- what should happen -->
+**Actual** <!-- what happens instead -->
+
+**Classification guess** <!-- pick one: bug / hotfix / enhancement / localization / macos-version / docs -->
+**Localization impact** <!-- which locales are affected, if any -->
+**Related roadmap pillar** <!-- macOS currency / advancing technology / use cases / lineage -->
+```
