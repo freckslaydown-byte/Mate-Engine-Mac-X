@@ -212,7 +212,7 @@ public class SettingsHandlerToggles : MonoBehaviour
 
     // Clone the two SuperClaw daemon toggle rows at runtime (handshake +
     // command polling) from the dance-transitions row, placed in the free
-    // slots at the bottom of the dance section (rel y=-420 / y=-460; the next
+    // slots at the bottom of the dance section (rel y=-435 / y=-465; the next
     // section header sits at rel y=-480, so rows must stay above it).
     // Same trick as EnsureFollowMusicToggle to avoid hand-editing scene YAML.
     private void EnsureDaemonToggles()
@@ -223,11 +223,11 @@ public class SettingsHandlerToggles : MonoBehaviour
         if (row == null || row.parent == null) return;
 
         if (enableDaemonHandshakeToggle == null)
-            enableDaemonHandshakeToggle = CloneDaemonToggle(row, "DaemonHandshake", -280f,
-                "DAEMON_HANDSHAKE", "SuperClaw 主从握手上报", "开启时向 SuperClaw 守护进程上报程序名、主机名与模型信息。");
+            enableDaemonHandshakeToggle = CloneDaemonToggle(row, "DaemonHandshake", -295f,
+                "DAEMON_HANDSHAKE", "SuperClaw 握手上报", "开启时向 SuperClaw 守护进程上报程序名、主机名与模型信息。");
         if (enableDaemonCommandPollingToggle == null)
-            enableDaemonCommandPollingToggle = CloneDaemonToggle(row, "DaemonCommandPolling", -320f,
-                "DAEMON_COMMAND_POLL", "SuperClaw 命令轮询（语音）", "开启时轮询守护进程的命令队列，收到 speak 指令即用 TTS 说话。");
+            enableDaemonCommandPollingToggle = CloneDaemonToggle(row, "DaemonCommandPolling", -325f,
+                "DAEMON_COMMAND_POLL", "SuperClaw 语音轮询", "开启时轮询守护进程的命令队列，收到 speak 指令即用 TTS 说话。");
     }
 
     private Toggle CloneDaemonToggle(Transform srcRow, string name, float yOffset,
@@ -260,6 +260,10 @@ public class SettingsHandlerToggles : MonoBehaviour
             binder.key = key;
             binder.fallback = fallback;
             binder.Apply();
+            // Free space below the dance section is only ~80px tall; slim the
+            // cloned label so two rows fit without touching the rows above or
+            // the "= WINDOW FEATURE" header below.
+            tmp.fontSize = 12f;
             break;
         }
         foreach (var txt in clone.GetComponentsInChildren<UnityEngine.UI.Text>(true))
