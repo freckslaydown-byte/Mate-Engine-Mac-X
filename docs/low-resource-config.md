@@ -3,6 +3,11 @@
 Guidance for running Mate Engine on resource-light machines — the MacBook Neo
 (8 GB), 8–16 GB MacBooks, and any other Mac short on unified memory.
 
+> **English-only · 英語のみ · 仅英文** — this document is written in English.
+> If you are reading a translation (e.g. via browser auto-translate), copy
+> **code blocks verbatim** — never translate them — or your configuration will
+> break. コード部分は翻訳せず、そのままコピーしてください。代码块请勿翻译，请原样复制。
+
 > **Scope note:** the daemon settings (`daemonEnabled` / `daemonHandshakeEnabled`
 > / `daemonCommandPollingEnabled`) exist on the `feature/daemon-handshake` and
 > `feature/daemon-commands` branches and land in `main` after the M2 cleanup.

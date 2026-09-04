@@ -187,6 +187,8 @@ This is a community port — features and future updates depend on the original 
 
 # 🍎 Mate Engine macOS 版
 
+> 📄 **ドキュメント（英語のみ・翻訳推奨）** — [gpt-sovits-setup.md](docs/gpt-sovits-setup.md)（GPT-SoVITS のセットアップ：自前サーバー vs クラウド、アプリ設定）・ [low-resource-config.md](docs/low-resource-config.md)（MacBook Neo 等の低スペック Mac 向け設定）。ブラウザの翻訳機能をご利用ください。**コード部分は翻訳せず、そのままコピーしてください。**
+
 **非公式ネイティブ macOS 移植版 — カスタム VRM アバター対応のデスクトップペットアプリ。** Apple Silicon（M1 以降）· macOS 26+ 対応。
 
 |  |  |
@@ -352,6 +354,8 @@ SIGN_IDENTITY="Developer ID Application: あなたの名前 (TEAMID)" NOTARIZE=1
 ## Chinese
 
 # 🍎 伙伴引擎 macOS 版
+
+> 📄 **文档（仅英文・建议用浏览器翻译）** — [gpt-sovits-setup.md](docs/gpt-sovits-setup.md)（GPT-SoVITS 设置：自建服务器 vs 云端、应用配置）・ [low-resource-config.md](docs/low-resource-config.md)（MacBook Neo 等低配 Mac 的配置）。请使用浏览器的翻译功能阅读。**代码块请勿翻译，直接复制即可。**
 
 **非官方 macOS 原生移植版 — 支持自定义 VRM 角色的桌面宠物应用。** 支持 Apple Silicon（M1 及更新）· macOS 26+。
 

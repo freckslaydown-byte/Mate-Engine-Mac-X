@@ -4,6 +4,11 @@ How the Mate Engine (this fork) talks to GPT-SoVITS for TTS voice, how to
 configure the app, and how to choose where the synthesizer runs — on the same
 Mac, on a server you control, or in the cloud.
 
+> **English-only · 英語のみ · 仅英文** — this document is written in English.
+> If you are reading a translation (e.g. via browser auto-translate), copy
+> **code blocks verbatim** — never translate them — or your configuration will
+> break. コード部分は翻訳せず、そのままコピーしてください。代码块请勿翻译，请原样复制。
+
 > **This guide is for everyone.** Whether you run GPT-SoVITS on the same
 > machine, on a dedicated box on your network, or in the cloud, the app
 > behaves identically — only the `ttsApiUrl` changes. There is a companion
