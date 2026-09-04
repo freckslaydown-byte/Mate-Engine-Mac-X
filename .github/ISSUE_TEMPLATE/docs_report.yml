@@ -1,0 +1,44 @@
+name: Documentation Issue
+description: Report a defect in the repo's documentation (README, ROADMAP, VERSIONING, CONTRIBUTING, ...).
+title: "[DOCS] "
+labels: ["docs"]
+body:
+  - type: dropdown
+    id: doc
+    attributes:
+      label: Which Document?
+      options:
+        - README.md
+        - ROADMAP.md
+        - VERSIONING.md
+        - CONTRIBUTING.md
+        - NOTICE.txt / LICENSE
+        - Other (specify below)
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's Wrong?
+      description: Wrong, stale, or missing information — quote the relevant part.
+    validations:
+      required: true
+
+  - type: textarea
+    id: fix
+    attributes:
+      label: Suggested Fix (optional)
+      description: What should it say instead?
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: read_note
+    attributes:
+      label: Confirmation
+      description: Confirm you've read the guideline above.
+      options:
+        - label: I confirm this report covers **one** documentation issue.
+    validations:
+      required: true

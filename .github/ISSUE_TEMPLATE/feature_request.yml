@@ -22,6 +22,20 @@ body:
     validations:
       required: true
 
+  - type: dropdown
+    id: pillar
+    attributes:
+      label: Related Roadmap Pillar
+      description: Which pillar does this serve? (see ROADMAP.md)
+      options:
+        - macOS currency
+        - Advancing technology
+        - Use cases
+        - Lineage
+        - Not sure
+    validations:
+      required: false
+
   - type: checkboxes
     id: read_note
     attributes:
