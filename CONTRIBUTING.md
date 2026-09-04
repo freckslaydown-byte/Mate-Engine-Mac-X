@@ -31,7 +31,7 @@ Thank you for your interest in contributing!
 
 ### Questions?
 
-If you're unsure about anything, feel free to open an issue or ask before starting work.
+If you're unsure about anything, ask in [Discussions](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/discussions) before starting work. The issue tracker is for confirmed bugs and roadmap items.
 
 Thanks again!
 
@@ -62,6 +62,6 @@ Thanks again!
 
 ### 有疑问？
 
-如果您对任何事情不确定，请随时创建问题或在开始工作前询问。
+如果您对任何事情不确定，请先在 [Discussions](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/discussions) 中提问。Issue 仅用于已确认的 Bug 与路线图事项。
 
 再次感谢您的支持！

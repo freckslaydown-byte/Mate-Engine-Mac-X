@@ -8,7 +8,7 @@
 | **Fork source** (macOS) | [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X) |
 | **Official upstream** (Windows) | [`shinyflvre/Mate-Engine`](https://github.com/shinyflvre/Mate-Engine) |
 | **Secondary upstream** (unfinished macOS) | [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) |
-| **Platform** | macOS 12.0+ · Universal binary (Apple Silicon + Intel) |
+| **Platform** | Apple Silicon (M1 and newer) · macOS 26+ (not Intel, not macOS ≤ 15) |
 | **Engine** | Unity 6000.4.8f1 + native Objective-C plugins |
 | **License** | GNU AGPL v3 & MateProv2 |
 | **Docs** | [ROADMAP.md](ROADMAP.md) (milestones & vision) · [VERSIONING.md](VERSIONING.md) (branching & backout) |
@@ -31,11 +31,13 @@
 
 ### What is this?
 
-**Mate Engine** is a free, lightweight desktop-pet app — an open-source alternative to *Desktop Mate* — with custom VRM avatars and modding support. This project is a **native port to macOS**, built with **Unity 6000.4.8f1** and native Objective-C plugins, supporting both Apple Silicon and Intel.
+**Mate Engine** is a free, lightweight desktop-pet app — an open-source alternative to *Desktop Mate* — with custom VRM avatars and modding support. This project is a **native port to macOS**, built with **Unity 6000.4.8f1** and native Objective-C plugins, supporting **Apple Silicon (M1 and newer) on macOS 26+**.
 
 Based on the upstream `Prepare 3.4 Features` branch (after X3.3).
 
 > 🚧 **Status: work in progress** — this port is still actively developed and **will have bugs**. Some features are incomplete, and not all official Windows features are available yet. If something breaks, [open an issue](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/issues).
+
+> 💬 **Questions? Ask in [Discussions](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/discussions).** Questions, help, and ideas go there — the issue tracker is reserved for confirmed bugs and roadmap items.
 
 #### 📸 Real-Device Test Screenshots
 
@@ -54,7 +56,7 @@ Based on the upstream `Prepare 3.4 Features` branch (after X3.3).
 
 #### ✨ Porting Feature Support
 
-**Native macOS plugins (clang-built `.bundle`, universal binary)**
+**Native macOS plugins (clang-built `.bundle`, Apple Silicon arm64)**
 
 | Plugin | Purpose |
 |---|---|
@@ -67,7 +69,7 @@ Based on the upstream `Prepare 3.4 Features` branch (after X3.3).
 
 | Feature | Status | Notes | Roadmap pillar |
 |---|---|---|---|
-| Native macOS | ✅ | Universal binary (arm64 + x86_64), macOS 12.0+; tracks new macOS releases | macOS currency |
+| Native macOS | ✅ | Apple Silicon (arm64, M1+), macOS 26+; tracks new macOS releases | macOS currency |
 | Transparent borderless always-on-top window | ✅ | Via UniWindowController | macOS currency |
 | Window sitting | ✅ | Sits on the top/bottom edge of windows (`up` / `down` / `auto` modes); absolute occlusion below the sit-line; runtime depth/height fine-tuning | macOS currency |
 | Dance to music | ✅ | ScreenCaptureKit system-audio capture (requires Screen Recording permission); 20 dance clips selectable | Use cases |
@@ -89,7 +91,7 @@ Based on the upstream `Prepare 3.4 Features` branch (after X3.3).
 
 | Aspect | Official (Windows) | This macOS port |
 |---|---|---|
-| Platform | Windows 10/11 | macOS 12.0+ (universal binary) |
+| Platform | Windows 10/11 | Apple Silicon (arm64, M1+), macOS 26+ |
 | Dance to music | Windows audio-loopback capture | ScreenCaptureKit system-audio capture, **requires Screen Recording permission** |
 | Sitting target | Window + taskbar | Window top/bottom edges (macOS has no taskbar; `up` / `down` / `auto` modes) |
 | Ambient light | None | **New**: follows desktop color scheme (requires Screen Recording permission) |
@@ -138,7 +140,7 @@ SIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" NOTARIZE=1 ./Tools/
 
 #### 🛠 Build & Run (macOS)
 
-**Prerequisites**: macOS 12.0+, [Unity 6000.4.8f1](https://unity.com/releases/editor/whats-new/6000.4.8f1), Xcode Command Line Tools (`clang`).
+**Prerequisites**: macOS 26+, [Unity 6000.4.8f1](https://unity.com/releases/editor/whats-new/6000.4.8f1), Xcode Command Line Tools (`clang`).
 
 ```bash
 ./Tools/build_macos.sh        # Builds Builds/macOS/MateEngineX.app (native plugins → Unity build → sign → arch check)
@@ -185,7 +187,7 @@ This is a community port — features and future updates depend on the original 
 
 # 🍎 Mate Engine macOS 版
 
-**非公式ネイティブ macOS 移植版 — カスタム VRM アバター対応のデスクトップペットアプリ。**
+**非公式ネイティブ macOS 移植版 — カスタム VRM アバター対応のデスクトップペットアプリ。** Apple Silicon（M1 以降）· macOS 26+ 対応。
 
 |  |  |
 |---|---|
@@ -193,13 +195,15 @@ This is a community port — features and future updates depend on the original 
 | **フォーク元リポジトリ**（macOS） | [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X) |
 | **公式元リポジトリ**（Windows） | [`shinyflvre/Mate-Engine`](https://github.com/shinyflvre/Mate-Engine) |
 | **二次元リポジトリ**（未完成のmacOS） | [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) |
-| **対応環境** | macOS 12.0+ · ユニバーサルバイナリ（Apple Silicon + Intel） |
+| **対応環境** | Apple Silicon（M1 以降）· macOS 26+（Intel 非対応、macOS 15 以前も非対応） |
 | **エンジン** | Unity 6000.4.8f1 + ネイティブ Objective-C プラグイン |
 | **ライセンス** | GNU AGPL v3 & MateProv2 |
 
 > ⚠️ **非公式のお知らせ** — これはコミュニティ製の**非公式**移植です。公式版はWindows向けです。本プロジェクトは [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X) からのフォークであり、同リポジトリは未完成の [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) の作業を引き継いでいます。なお、`Marksonthegamer/Mate-Engine-Linux-Port` は別系統の非公式Linux移植であり、このmacOS移植とは無関係です。
 >
 > 🚧 **開発中** — 本移植は現在も活発に開発中であり、**バグが含まれています**。一部の機能は未完成で、公式Windows版の全機能はまだ利用できません。問題が発生した場合は [Issues](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/issues) から報告してください。
+>
+> 💬 **質問は [Discussions](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/discussions) へ。** 質問・ヘルプ・アイデアはこちらで。Issues は確定したバグとロードマップ項目専用です。
 
 ### 📸 実機テストのスクリーンショット
 
@@ -231,7 +235,7 @@ This is a community port — features and future updates depend on the original 
 
 | 機能 | 状態 | 説明 | ロードマップの柱 |
 |---|---|---|---|
-| ネイティブ macOS | ✅ | ユニバーサルバイナリ（arm64 + x86_64）、macOS 12.0+；新macOSリリースにも追随 | macOS現行性 |
+| ネイティブ macOS | ✅ | Apple Silicon（arm64、M1以降）、macOS 26+；新macOSリリースにも追随 | macOS現行性 |
 | 透明・枠なし・常に最前面のウィンドウ | ✅ | UniWindowController を使用 | macOS現行性 |
 | ウィンドウ座り | ✅ | ウィンドウの上/下エッジに座る（`up` / `down` / `auto` の3モード）；座線以下の完全遮蔽；実行時・深さ/高さの微調整 | macOS現行性 |
 | 音楽に合わせてダンス | ✅ | ScreenCaptureKit によるシステム音声キャプチャ（画面収録権限が必要）；ダンスは20クリップから選択可能 | ユースケース |
@@ -253,7 +257,7 @@ This is a community port — features and future updates depend on the original 
 
 | 項目 | 公式（Windows） | 本macOS移植 |
 |---|---|---|
-| 対応環境 | Windows 10/11 | macOS 12.0+（ユニバーサルバイナリ） |
+| 対応環境 | Windows 10/11 | Apple Silicon（arm64、M1以降）、macOS 26+ |
 | 音楽ダンス | Windowsオーディオループバック | ScreenCaptureKitによるシステム音声キャプチャ、**画面収録権限が必要** |
 | 座る対象 | ウィンドウ＋タスクバー | ウィンドウの上/下エッジ（macOSにタスクバーは無し、`up`/`down`/`auto`モード） |
 | アンビエントライト | なし | **新規**：デスクトップ配色に追従（画面収録権限が必要） |
@@ -302,7 +306,7 @@ SIGN_IDENTITY="Developer ID Application: あなたの名前 (TEAMID)" NOTARIZE=1
 
 ### 🛠 ビルドと実行（macOS）
 
-**前提条件**：macOS 12.0+、[Unity 6000.4.8f1](https://unity.com/releases/editor/whats-new/6000.4.8f1)、Xcode Command Line Tools（`clang`）。
+**前提条件**：macOS 26+、[Unity 6000.4.8f1](https://unity.com/releases/editor/whats-new/6000.4.8f1)、Xcode Command Line Tools（`clang`）。
 
 ```bash
 ./Tools/build_macos.sh        # Builds/macOS/MateEngineX.app をビルド（ネイティブプラグイン → Unityビルド → 署名 → アーキテクチャ確認）
@@ -349,7 +353,7 @@ SIGN_IDENTITY="Developer ID Application: あなたの名前 (TEAMID)" NOTARIZE=1
 
 # 🍎 伙伴引擎 macOS 版
 
-**非官方 macOS 原生移植版 — 支持自定义 VRM 角色的桌面宠物应用。**
+**非官方 macOS 原生移植版 — 支持自定义 VRM 角色的桌面宠物应用。** 支持 Apple Silicon（M1 及更新）· macOS 26+。
 
 |  |  |
 |---|---|
@@ -357,13 +361,15 @@ SIGN_IDENTITY="Developer ID Application: あなたの名前 (TEAMID)" NOTARIZE=1
 | **Fork 来源**（macOS） | [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X) |
 | **官方上游**（Windows） | [`shinyflvre/Mate-Engine`](https://github.com/shinyflvre/Mate-Engine) |
 | **二级上游**（未完成的 macOS 版） | [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) |
-| **平台** | macOS 12.0+ · 通用二进制（Apple Silicon + Intel） |
+| **平台** | Apple Silicon（M1 及更新）· macOS 26+（不支持 Intel，也不支持 macOS 15 及更早） |
 | **引擎** | Unity 6000.4.8f1 + 原生 Objective-C 插件 |
 | **许可** | GNU AGPL v3 & MateProv2 |
 
 > ⚠️ **非官方声明** — 本项目为社区**非官方**移植，官方版本面向 Windows。本项目 fork 自 [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X)，后者接续未完成的 [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) 继续开发。另请注意：`Marksonthegamer/Mate-Engine-Linux-Port` 是独立的非官方 Linux 移植，与本 macOS 移植无关。
 >
 > 🚧 **仍在开发中** — 本移植项目工作仍在进行，**仍会存在很多 Bug**。部分功能可能不完整，官方 Windows 版的全部功能尚未全部支持。如遇问题，请在 [Issues](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/issues) 中反馈。
+>
+> 💬 **有疑问？请到 [Discussions](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/discussions) 提问。** 问题、帮助和想法请在 Discussions 讨论；Issues 仅用于已确认的 Bug 和路线图事项。
 
 ### 📸 实机测试截图
 
@@ -395,7 +401,7 @@ SIGN_IDENTITY="Developer ID Application: あなたの名前 (TEAMID)" NOTARIZE=1
 
 | 功能 | 状态 | 说明 | 路线图支柱 |
 |---|---|---|---|
-| 原生 macOS 运行 | ✅ | 通用二进制（arm64 + x86_64），macOS 12.0+；持续适配 macOS 新版本 | macOS 时效 |
+| 原生 macOS 运行 | ✅ | Apple Silicon（arm64、M1 及更新）、macOS 26+；持续适配 macOS 新版本 | macOS 时效 |
 | 透明无边框置顶窗口 | ✅ | 通过 UniWindowController 实现 | macOS 时效 |
 | 窗口坐立 / 吸附 | ✅ | 坐在窗口上/下边缘（`up` / `down` / `auto` 三种模式）；坐线以下绝对遮挡；运行时深度/高度微调 | macOS 时效 |
 | 随音乐跳舞 | ✅ | ScreenCaptureKit 系统音频捕获（需屏幕录制权限）；20 个舞蹈片段可选 | 使用场景 |
@@ -417,7 +423,7 @@ SIGN_IDENTITY="Developer ID Application: あなたの名前 (TEAMID)" NOTARIZE=1
 
 | 方面 | 官方（Windows） | 本移植（macOS） |
 |---|---|---|
-| 运行平台 | Windows 10/11 | macOS 12.0+（通用二进制） |
+| 运行平台 | Windows 10/11 | Apple Silicon（arm64、M1 及更新）、macOS 26+ |
 | 随音乐跳舞 | Windows 音频回环捕获 | ScreenCaptureKit 系统音频捕获，**需屏幕录制权限** |
 | 坐立目标 | 窗口 + 任务栏 | 窗口上/下边缘（macOS 无任务栏，`up` / `down` / `auto` 模式） |
 | 氛围光 | 无 | **新增**：实时跟随桌面配色（需屏幕录制权限） |
@@ -466,7 +472,7 @@ SIGN_IDENTITY="Developer ID Application: 你的名字 (TEAMID)" NOTARIZE=1 ./Too
 
 ### 🛠 构建与运行（macOS）
 
-**前置要求**：macOS 12.0+、[Unity 6000.4.8f1](https://unity.com/releases/editor/whats-new/6000.4.8f1)、Xcode 命令行工具（`clang`）。
+**前置要求**：macOS 26+、[Unity 6000.4.8f1](https://unity.com/releases/editor/whats-new/6000.4.8f1)、Xcode 命令行工具（`clang`）。
 
 ```bash
 ./Tools/build_macos.sh        # 构建 Builds/macOS/MateEngineX.app（原生插件 → Unity 打包 → 签名 → 架构校验）

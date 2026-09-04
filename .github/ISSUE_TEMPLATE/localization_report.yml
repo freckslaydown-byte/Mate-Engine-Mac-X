@@ -1,0 +1,44 @@
+name: Localization Issue
+description: Report a translation gap or locale regression. Localization is a ship blocker — all 13 locales, JA/ZH priority.
+title: "[LOCALE] "
+labels: ["localization"]
+body:
+  - type: input
+    id: locales
+    attributes:
+      label: Affected Locale(s)
+      description: Which locales show the problem? (e.g. JA, ZH-CN, ZH-TW, DE, FR, ...)
+      placeholder: "JA, ZH-CN"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Issue Type
+      options:
+        - Translation is wrong or misleading
+        - String missing / not translated
+        - UI text broken or overflowing
+        - Locale regression (worked before, broke in a build)
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Where does it appear? What does it currently say (and what should it say)?
+      placeholder: "In Settings → Chat, the button reads ... and should read ..."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: read_note
+    attributes:
+      label: Confirmation
+      description: Confirm you've read the guideline above.
+      options:
+        - label: I confirm this report includes **only one** localization issue.
+    validations:
+      required: true

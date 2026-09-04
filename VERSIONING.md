@@ -30,9 +30,20 @@ Milestones keep the repo's direction legible; fixes keep it healthy. Mixing the 
 
 **Cardinal rule:** milestone branches carry *only* their milestone. Fixes, hotfixes, and experiments never ride along on a milestone branch — and features never sneak into fix branches.
 
+## Supported platforms
+
+| Dimension | Supported | Supported until |
+|-----------|-----------|-----------------|
+| Architecture | Apple Silicon (M1 and newer) | — |
+| macOS | 26 (Tahoe) and newer | Next major + 1, per release review |
+
+Intel Macs are **not** supported, from the first release on. Rationale: macOS 27 (Golden Gate) is Apple Silicon-only — Intel Macs end with Tahoe, and Rosetta 2 is slated for removal in macOS 28 — so "Intel Mac" and "current macOS" will no longer coexist. The fork has no published release yet, so dropping Intel now costs nothing and avoids forever carrying an architecture with no test hardware to verify against. The bug-report template's macOS dropdown mirrors this support list.
+
 ## Issues & triage
 
 **Tracker:** all issues live on the fork's own tracker — [`freckslaydown-byte/Mate-Engine-Mac-X/issues`](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/issues). Bugs in this fork are never filed on the upstream trackers. `CJackHwang/Mate-Engine-Mac-X` remains the fork source and lineage reference, but its Issues/Releases pages are *not* used by this project's users.
+
+**Discussions:** questions, help, and rough ideas go to [`Discussions`](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/discussions) first; only confirmed defects and roadmap-backed items become issues. `config.yml` routes "Question & Help" there, and the README/CONTRIBUTING point contributors the same way.
 
 **Labels**
 
