@@ -11,7 +11,7 @@
 | **Platform** | Apple Silicon (M1 and newer) · macOS 26+ (not Intel, not macOS ≤ 15) |
 | **Engine** | Unity 6000.4.8f1 + native Objective-C plugins |
 | **License** | GNU AGPL v3 & MateProv2 |
-| **Docs** | [ROADMAP.md](ROADMAP.md) (milestones & vision) · [VERSIONING.md](VERSIONING.md) (branching & backout) |
+| **Docs** | [ROADMAP.md](ROADMAP.md) (milestones & vision) · [VERSIONING.md](VERSIONING.md) (branching & backout) · [gpt-sovits-setup.md](docs/gpt-sovits-setup.md) (TTS: self-host vs cloud, app config) · [low-resource-config.md](docs/low-resource-config.md) (MacBook Neo & low-memory Macs) |
 
 > ⚠️ **Unofficial notice** — This is a community-made, **unofficial** port. The official project targets Windows. This project is forked from [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X), which itself continues the unfinished [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) branch. Note that `Marksonthegamer/Mate-Engine-Linux-Port` is a separate, also-unofficial Linux port and is unrelated to this macOS port.
 >
