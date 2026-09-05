@@ -43,7 +43,7 @@ Based on the upstream `Prepare 3.4 Features` branch (after X3.3).
 
 <img src="picture1.jpg" width="640" alt="Real-device test screenshot on macOS">
 
-<img src="picture.2jpg.jpg" width="400" alt="Real-device test screenshot on macOS (portrait)">
+<img src="picture2.jpg" width="400" alt="Real-device test screenshot on macOS (portrait)">
 
 #### 📚 Project Lineage
 
@@ -105,9 +105,7 @@ Based on the upstream `Prepare 3.4 Features` branch (after X3.3).
 
 **Download from Releases**
 
-> ⚠️ **No release published yet** — this fork has not published a release artifact yet (the fork's Releases page is empty; `v1.0.0` is inherited from the fork source but has no assets here). Until **M7** ships (see [ROADMAP.md](ROADMAP.md)), **build it yourself** — see the **Build & Run** section below.
-
-Once **M7** ships, this section will walk you through downloading the latest `MateEngineX-vX.X.X-macOS.zip` (and `MateEngineX.dmg`) from the [Releases](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/releases) page and dragging `MateEngineX.app` into `/Applications/`.
+Download the latest release — `MateEngineX-v1.1.0-macOS.zip` (or `MateEngineX.dmg`, built with `PACKAGE_DMG=1`) — from the [Releases](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/releases) page, unzip, and drag `MateEngineX.app` into `/Applications/`. Requires macOS 26+ on Apple Silicon (M1 or newer).
 
 **First run**
 
@@ -212,7 +210,7 @@ This is a community port — features and future updates depend on the original 
 
 <img src="picture1.jpg" width="640" alt="macOS 実機テストのスクリーンショット">
 
-<img src="picture.2jpg.jpg" width="400" alt="macOS 実機テストのスクリーンショット（縦）">
+<img src="picture2.jpg" width="400" alt="macOS 実機テストのスクリーンショット（縦）">
 
 ### 📚 プロジェクトの系譜
 
@@ -274,9 +272,7 @@ This is a community port — features and future updates depend on the original 
 
 **Releases からダウンロード**
 
-> ⚠️ **リリース未公開** — 本フォークではまだリリース成果物を公開していません（Releases ページは空です。`v1.0.0` はフォーク元から引き継いだタグで、本リポジトリにはアセットがありません）。**M7** が提供されるまで（[ROADMAP.md](ROADMAP.md) 参照）は、**自分でビルド**してください — 下記の「ビルドと実行」を参照。
-
-**M7** リリース後は、このセクションで [Releases](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/releases) ページから最新の `MateEngineX-vX.X.X-macOS.zip`（および `MateEngineX.dmg`）をダウンロードし、`MateEngineX.app` を `/Applications/` へドラッグ＆ドロップする手順を案内します。
+[Releases](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/releases) ページから最新リリース（`MateEngineX-v1.1.0-macOS.zip`。`PACKAGE_DMG=1` でビルドした `MateEngineX.dmg` もあります）をダウンロードし、解凍して `MateEngineX.app` を `/Applications/` へドラッグ＆ドロップしてください。動作環境：macOS 26+（Apple Silicon、M1以降）。
 
 **初回起動**
 
@@ -380,7 +376,7 @@ SIGN_IDENTITY="Developer ID Application: あなたの名前 (TEAMID)" NOTARIZE=1
 
 <img src="picture1.jpg" width="640" alt="macOS 实机测试截图">
 
-<img src="picture.2jpg.jpg" width="400" alt="macOS 实机测试截图（竖屏）">
+<img src="picture2.jpg" width="400" alt="macOS 实机测试截图（竖屏）">
 
 ### 📚 项目谱系
 
@@ -442,9 +438,7 @@ SIGN_IDENTITY="Developer ID Application: あなたの名前 (TEAMID)" NOTARIZE=1
 
 **从 Release 下载**
 
-> ⚠️ **尚未发布** — 本 fork 尚未发布任何 Release 产物（Releases 页面为空；`v1.0.0` 是从 fork 来源继承的标签，在此仓库没有资源）。在 **M7** 发布之前（见 [ROADMAP.md](ROADMAP.md)），请**自行构建** — 参考下方「构建与运行」。
-
-**M7** 发布后，本部分将说明如何从 [Releases](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/releases) 页面下载最新的 `MateEngineX-vX.X.X-macOS.zip`（以及 `MateEngineX.dmg`），并将 `MateEngineX.app` 拖入 `/Applications/`。
+从 [Releases](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/releases) 页面下载最新版本（`MateEngineX-v1.1.0-macOS.zip`，另有 `PACKAGE_DMG=1` 构建的 `MateEngineX.dmg`），解压后将 `MateEngineX.app` 拖入 `/Applications/`。需 macOS 26+（Apple Silicon，M1 或更新）。
 
 **首次启动**
 
