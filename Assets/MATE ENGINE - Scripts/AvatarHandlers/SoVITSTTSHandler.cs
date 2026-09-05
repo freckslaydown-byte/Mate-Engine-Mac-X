@@ -18,16 +18,15 @@ public class SoVITSTTSHandler : MonoBehaviour
     [Serializable]
     private class TTSPayload
     {
-        public string text;
-        public string text_lang;
-        public string ref_audio_path;
+        public string refer_wav_path;
         public string prompt_text;
-        public string prompt_lang;
+        public string prompt_language;
+        public string text;
+        public string text_language;
+        public string cut_punc;
         public int top_k;
         public float top_p;
         public float temperature;
-        public string text_split_method;
-        public string media_type = "wav";
     }
 
     private Coroutine _currentTTS;
@@ -104,16 +103,15 @@ public class SoVITSTTSHandler : MonoBehaviour
 
         var payload = new TTSPayload
         {
-            text = text,
-            text_lang = data.ttsTextLang,
-            ref_audio_path = data.ttsRefAudioPath,
+            refer_wav_path = data.ttsRefAudioPath,
             prompt_text = data.ttsPromptText,
-            prompt_lang = data.ttsPromptLang,
+            prompt_language = data.ttsPromptLang,
+            text = text,
+            text_language = data.ttsTextLang,
+            cut_punc = data.ttsTextSplitMethod,
             top_k = data.ttsTopK,
             top_p = data.ttsTopP,
-            temperature = data.ttsTemperature,
-            text_split_method = data.ttsTextSplitMethod,
-            media_type = "wav"
+            temperature = data.ttsTemperature
         };
 
         string jsonBody = JsonConvert.SerializeObject(payload);
