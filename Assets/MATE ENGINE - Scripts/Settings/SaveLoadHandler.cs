@@ -506,7 +506,7 @@ public class SaveLoadHandler : MonoBehaviour
             // scene's component is inactive/missing at runtime. SoVITSTTSHandler.Awake
             // adds an AudioSource, and DontDestroyOnLoad keeps it alive across scenes.
             Debug.LogWarning("[SaveLoadHandler] SoVITSTTSHandler not found in scene; creating one.");
-            var go = new UnityEngine.GameObject("SuperClawTTS");
+            var go = new GameObject("SuperClawTTS");
             tts = go.AddComponent<SoVITSTTSHandler>();
             UnityEngine.Object.DontDestroyOnLoad(go);
         }

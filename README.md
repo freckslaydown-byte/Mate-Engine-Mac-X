@@ -10,7 +10,7 @@
 | **Secondary upstream** (unfinished macOS) | [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) |
 | **Platform** | Apple Silicon (M1 and newer) · macOS 26+ (not Intel, not macOS ≤ 15) |
 | **Engine** | Unity 6000.4.8f1 + native Objective-C plugins |
-| **License** | GNU AGPL v3 & MateProv2 |
+| **License** | MateEngine Pro License v2.1 (see [LICENSE.md](LICENSE.md)) |
 | **Docs** | [ROADMAP.md](ROADMAP.md) (milestones & vision) · [VERSIONING.md](VERSIONING.md) (branching & backout) · [gpt-sovits-setup.md](docs/gpt-sovits-setup.md) (TTS: self-host vs cloud, app config) · [low-resource-config.md](docs/low-resource-config.md) (MacBook Neo & low-memory Macs) |
 
 > ⚠️ **Unofficial notice** — This is a community-made, **unofficial** port. The official project targets Windows. This project is forked from [`CJackHwang/Mate-Engine-Mac-X`](https://github.com/CJackHwang/Mate-Engine-Mac-X), which itself continues the unfinished [`BNDSer/Mate-Engine-Mac`](https://github.com/BNDSer/Mate-Engine-Mac) branch. Note that `Marksonthegamer/Mate-Engine-Linux-Port` is a separate, also-unofficial Linux port and is unrelated to this macOS port.
@@ -161,8 +161,9 @@ The output is `Builds/macOS/MateEngineX.app` — copy it into `/Applications/` t
 
 #### ⚖️ License
 
-This project inherits the upstream license: **GNU AGPL v3 & MateProv2** — please read the license terms carefully.
+This project inherits the upstream license: **MateEngine Pro License v2.1** — see [LICENSE.md](LICENSE.md) for the full terms. Please read them carefully before distributing.
 
+- Third-party components are governed by their own licenses; see [NOTICE.txt](NOTICE.txt) for the full index of bundled components, their licenses, and their `LICENSE`/`NOTICE` file locations.
 - The default avatar is All Rights Reserved by [Yorshka Shop](https://yorshkasencho.booth.pm/). Do not redistribute this model in your builds.
 - Scripts and native-plugin code added by this port are released under the same license.
 
