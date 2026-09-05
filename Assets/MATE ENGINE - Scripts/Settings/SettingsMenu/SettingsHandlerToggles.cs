@@ -26,6 +26,10 @@ public class SettingsHandlerToggles : MonoBehaviour
     public Toggle enableFeedSystemToggle;
     public Toggle enableRandomAvatarToggle;
     public Toggle enableLocomotionToggle;
+    // SuperClaw daemon link: handshake reporting and command polling.
+    // Cloned at runtime (see EnsureDaemonToggles) if not bound in the scene.
+    public Toggle enableDaemonHandshakeToggle;
+    public Toggle enableDaemonCommandPollingToggle;
 
     [Header("External Objects")]
     public GameObject bloomObject;
@@ -63,6 +67,9 @@ public class SettingsHandlerToggles : MonoBehaviour
         enableFeedSystemToggle?.onValueChanged.AddListener(OnEnableFeedSystemChanged);
         enableRandomAvatarToggle?.onValueChanged.AddListener(OnEnableRandomAvatarChanged);
         enableLocomotionToggle?.onValueChanged.AddListener(OnEnableLocomotionChanged);
+        EnsureDaemonToggles();
+        enableDaemonHandshakeToggle?.onValueChanged.AddListener(OnDaemonHandshakeChanged);
+        enableDaemonCommandPollingToggle?.onValueChanged.AddListener(OnDaemonCommandPollingChanged);
         LoadSettings();
         ApplySettings();
     }
@@ -113,6 +120,28 @@ public class SettingsHandlerToggles : MonoBehaviour
     }
     private void OnEnableRandomAvatarChanged(bool v) { SaveLoadHandler.Instance.data.enableRandomAvatar = v; Save(); }
     private void OnEnableLocomotionChanged(bool v) { SaveLoadHandler.Instance.data.enableLocomotion = v; ApplySettings(); Save(); }
+    private void OnDaemonHandshakeChanged(bool v)
+    {
+        var data = SaveLoadHandler.Instance.data;
+        data.daemonHandshakeEnabled = v;
+        if (v) data.daemonEnabled = true; // lifting any sub-switch also lifts the master
+        if (v && string.IsNullOrEmpty(data.daemonUrl))
+        {
+            Debug.LogWarning("[SettingsHandlerToggles] Daemon handshake enabled but daemonUrl is empty; set the URL in settings.json first.");
+        }
+        Save();
+    }
+    private void OnDaemonCommandPollingChanged(bool v)
+    {
+        var data = SaveLoadHandler.Instance.data;
+        data.daemonCommandPollingEnabled = v;
+        if (v) data.daemonEnabled = true;
+        if (v && string.IsNullOrEmpty(data.daemonUrl))
+        {
+            Debug.LogWarning("[SettingsHandlerToggles] Daemon command polling enabled but daemonUrl is empty; set the URL in settings.json first.");
+        }
+        Save();
+    }
 
     #endregion
 
@@ -181,6 +210,84 @@ public class SettingsHandlerToggles : MonoBehaviour
         }
     }
 
+    // Clone the two SuperClaw daemon toggle rows at runtime (handshake +
+    // command polling) from the dance-transitions row, placed in the free
+    // slots at the bottom of the dance section (rel y=-435 / y=-465; the next
+    // section header sits at rel y=-480, so rows must stay above it).
+    // Same trick as EnsureFollowMusicToggle to avoid hand-editing scene YAML.
+    private void EnsureDaemonToggles()
+    {
+        if ((enableDaemonHandshakeToggle != null && enableDaemonCommandPollingToggle != null)
+            || enableDanceSwitchToggle == null) return;
+        Transform row = enableDanceSwitchToggle.transform;
+        if (row == null || row.parent == null) return;
+
+        if (enableDaemonHandshakeToggle == null)
+            enableDaemonHandshakeToggle = CloneDaemonToggle(row, "DaemonHandshake", -295f,
+                "DAEMON_HANDSHAKE", "SuperClaw Handshake", "When on, reports program name, hostname and model info to the SuperClaw daemon.");
+        if (enableDaemonCommandPollingToggle == null)
+            enableDaemonCommandPollingToggle = CloneDaemonToggle(row, "DaemonCommandPolling", -325f,
+                "DAEMON_COMMAND_POLL", "SuperClaw Command Poll (TTS)", "When on, polls the daemon command queue and speaks via TTS when a speak command arrives.");
+    }
+
+    private Toggle CloneDaemonToggle(Transform srcRow, string name, float yOffset,
+        string key, string fallback, string tooltipText)
+    {
+        GameObject clone = Instantiate(srcRow.gameObject, srcRow.parent);
+        clone.transform.SetSiblingIndex(srcRow.GetSiblingIndex() + 1);
+        clone.name = name;
+
+        RectTransform rt = clone.GetComponent<RectTransform>();
+        RectTransform srcRT = srcRow as RectTransform;
+        if (rt != null && srcRT != null)
+        {
+            Vector2 pos = srcRT.anchoredPosition;
+            rt.anchoredPosition = new Vector2(pos.x, pos.y + yOffset);
+        }
+
+        Toggle t = clone.GetComponent<Toggle>();
+        if (t != null)
+        {
+            t.onValueChanged.RemoveAllListeners(); // drop cloned handlers
+        }
+
+        foreach (var tmp in clone.GetComponentsInChildren<TMPro.TextMeshProUGUI>(true))
+        {
+            var lse = tmp.GetComponent<LocalizeStringEvent>();
+            if (lse != null) lse.enabled = false;
+            // Do NOT bind a localization-table key: DAEMON_HANDSHAKE / etc. are not
+            // entries in the Languages (UI) table, and Unity logs
+            // "No translation found for ..." for missing keys. Set the text
+            // directly (fallback); locale changes won't rewrite these two rows.
+            var binder = tmp.GetComponent<LocTextBinder>();
+            if (binder != null) binder.key = "";
+            tmp.text = fallback;
+            // Free space below the dance section is only ~80px tall; slim the
+            // cloned label so two rows fit without touching the rows above or
+            // the "= WINDOW FEATURE" header below.
+            tmp.fontSize = 12f;
+            break;
+        }
+        foreach (var txt in clone.GetComponentsInChildren<UnityEngine.UI.Text>(true))
+        {
+            var lse = txt.GetComponent<LocalizeStringEvent>();
+            if (lse != null) lse.enabled = false;
+            var binder = txt.GetComponent<LocTextBinder>();
+            if (binder != null) binder.key = "";
+            txt.text = fallback;
+            break;
+        }
+        var tooltip = clone.GetComponent<UiTooltip>();
+        if (tooltip != null)
+        {
+            // Set tooltipText only; leave locKey empty so the tooltip never
+            // tries to look up a non-existent key in the localization table.
+            tooltip.locKey = "";
+            tooltip.tooltipText = tooltipText;
+        }
+        return t;
+    }
+
     public void LoadSettings()
     {
         var data = SaveLoadHandler.Instance.data;
@@ -204,6 +311,8 @@ public class SettingsHandlerToggles : MonoBehaviour
         enableFeedSystemToggle?.SetIsOnWithoutNotify(SaveLoadHandler.Instance.data.enableFeedSystem);
         enableRandomAvatarToggle?.SetIsOnWithoutNotify(SaveLoadHandler.Instance.data.enableRandomAvatar);
         enableLocomotionToggle?.SetIsOnWithoutNotify(data.enableLocomotion);
+        enableDaemonHandshakeToggle?.SetIsOnWithoutNotify(data.daemonEnabled && data.daemonHandshakeEnabled);
+        enableDaemonCommandPollingToggle?.SetIsOnWithoutNotify(data.daemonEnabled && data.daemonCommandPollingEnabled);
         ApplySettings();
     }
 
@@ -289,6 +398,8 @@ public class SettingsHandlerToggles : MonoBehaviour
         enableFeedSystemToggle?.SetIsOnWithoutNotify(false);
         enableRandomAvatarToggle?.SetIsOnWithoutNotify(false);
         enableLocomotionToggle?.SetIsOnWithoutNotify(false);
+        enableDaemonHandshakeToggle?.SetIsOnWithoutNotify(false);
+        enableDaemonCommandPollingToggle?.SetIsOnWithoutNotify(false);
         SaveLoadHandler.Instance.data.enableLocomotion = false;
 
 
@@ -311,6 +422,9 @@ public class SettingsHandlerToggles : MonoBehaviour
         data.enableAutoMemoryTrim = false;
         data.enableFeedSystem = false;
         data.enableMinecraftMessages = false;
+        data.daemonEnabled = false;
+        data.daemonHandshakeEnabled = true;
+        data.daemonCommandPollingEnabled = true;
         SaveLoadHandler.Instance.SaveToDisk();
         ApplySettings();
     }

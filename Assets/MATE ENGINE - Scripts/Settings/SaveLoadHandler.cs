@@ -256,6 +256,10 @@ public class SaveLoadHandler : MonoBehaviour
         // sends it as X-SuperClaw-Token on command polls/acks, and the daemon
         // requires it (HS_TOKEN). Leave empty for no auth (LAN trust).
         public string daemonToken = "";
+        // Independent sub-switches surfaced in the settings UI. Both default
+        // true so existing saves that only set daemonEnabled=true keep working.
+        public bool daemonHandshakeEnabled = true;
+        public bool daemonCommandPollingEnabled = true;
 
         // GPT-SoVITS TTS settings
         public string ttsApiUrl = "http://100.75.53.37:9880/tts";
@@ -359,12 +363,13 @@ public class SaveLoadHandler : MonoBehaviour
 
     string DaemonHandshakeSignature()
     {
-        return (data.daemonEnabled ? "1" : "0") + "|" + data.daemonUrl + "|" + data.llmModel + "|" + data.llmBaseUrl;
+        return (data.daemonEnabled ? "1" : "0") + "|" + (data.daemonHandshakeEnabled ? "1" : "0")
+            + "|" + data.daemonUrl + "|" + data.llmModel + "|" + data.llmBaseUrl;
     }
 
     void TryPushDaemonHandshake()
     {
-        if (!data.daemonEnabled || string.IsNullOrEmpty(data.daemonUrl))
+        if (!data.daemonEnabled || !data.daemonHandshakeEnabled || string.IsNullOrEmpty(data.daemonUrl))
         {
             lastHandshakeSignature = null;
             return;
@@ -441,7 +446,7 @@ public class SaveLoadHandler : MonoBehaviour
 
     void TryPollDaemonCommand()
     {
-        if (!data.daemonEnabled || string.IsNullOrEmpty(data.daemonUrl)) return;
+        if (!data.daemonEnabled || !data.daemonCommandPollingEnabled || string.IsNullOrEmpty(data.daemonUrl)) return;
         if (commandPollInFlight) return;
         commandPollInFlight = true;
         StartCoroutine(PollDaemonCommandCoroutine());

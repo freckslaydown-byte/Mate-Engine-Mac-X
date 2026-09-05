@@ -6,11 +6,8 @@ body:
   - type: textarea
     id: what-happened
     attributes:
-      label: What happened?
-      description: |
-        Describe the issue in detail.
-
-        ⚠️ Please report only **one** bug per issue. Submitting multiple bugs will make the report invalid and it may be ignored or deleted.
+      label: Summary
+      description: One line — what's wrong.
       placeholder: "It crashed when I clicked X..."
     validations:
       required: true
@@ -24,30 +21,66 @@ body:
     validations:
       required: true
 
-  - type: dropdown
-    id: version
+  - type: textarea
+    id: expected-actual
     attributes:
-      label: App Version
-      description: Which version were you using when the bug occurred?
-      options:
-        - "2.1.4"
-        - "2.1.2"
-        - "2.1.0"
-        - "1.9.8"
-        - "1.9.5"
+      label: Expected vs Actual
+      description: What should happen, and what happens instead?
+      value: |
+        **Expected**
+        <!-- what should happen -->
+
+        **Actual**
+        <!-- what happens instead -->
     validations:
       required: true
 
   - type: dropdown
-    id: store-edition
+    id: macos-version
     attributes:
-      label: Store Edition
-      description: Where did you get this version of the app?
+      label: macOS Version
+      description: "Which macOS release were you on? (Supported: macOS 26 Tahoe and newer.)"
       options:
-        - "GitHub Edition"
-        - "Steam Edition"
+        - macOS 26 (Tahoe)
+        - macOS 15 (Sequoia)
+        - Older
+        - Other
     validations:
       required: true
+
+  - type: input
+    id: app-version
+    attributes:
+      label: App Version / Build
+      description: Tag, branch, or build info if known (e.g. v1.0.0, or a commit SHA).
+      placeholder: "v1.0.0"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: classification
+    attributes:
+      label: Classification Guess (optional)
+      description: Your best guess helps triage. The maintainer applies the final label.
+      options:
+        - bug
+        - hotfix
+        - enhancement
+        - localization
+        - macos-version
+        - docs
+        - Not sure
+    validations:
+      required: false
+
+  - type: input
+    id: localization-impact
+    attributes:
+      label: Localization Impact (optional)
+      description: Which locales are affected, if any? Localization is a ship blocker here.
+      placeholder: "None / e.g. JA, ZH-CN, DE"
+    validations:
+      required: false
 
   - type: checkboxes
     id: read_note

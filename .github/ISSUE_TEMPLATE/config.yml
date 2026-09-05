@@ -1,2 +1,5 @@
 blank_issues_enabled: false
-contact_links: []
+contact_links:
+  - name: Questions & Help
+    url: https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/discussions
+    about: Ask the community — questions, help, and how-to. The issue tracker is for confirmed bugs and roadmap items.
