@@ -37,7 +37,7 @@ Milestones keep the repo's direction legible; fixes keep it healthy. Mixing the 
 | Architecture | Apple Silicon (M1 and newer) | — |
 | macOS | 26 (Tahoe) and newer | Next major + 1, per release review |
 
-Intel Macs are **not** supported, from the first release on. Rationale: macOS 27 (Golden Gate) is Apple Silicon-only — Intel Macs end with Tahoe, and Rosetta 2 is slated for removal in macOS 28 — so "Intel Mac" and "current macOS" will no longer coexist. The fork has no published release yet, so dropping Intel now costs nothing and avoids forever carrying an architecture with no test hardware to verify against. The bug-report template's macOS dropdown mirrors this support list.
+Intel Macs are **not** supported, from the first release on. Rationale: macOS 27 (Golden Gate) is Apple Silicon-only — Intel Macs end with Tahoe, and Rosetta 2 is slated for removal in macOS 28 — so "Intel Mac" and "current macOS" will no longer coexist. Dropping Intel cost nothing at the first release (v1.1.0) and avoids forever carrying an architecture with no test hardware to verify against. The bug-report template's macOS dropdown mirrors this support list.
 
 ## Issues & triage
 
@@ -116,7 +116,7 @@ git reset --hard HEAD~N
 
 ## Releases
 
-- `main` is the only line that receives tags: `vX.Y.Z` (currently `v1.0.0` inherited from the fork source; **no release artifacts published on this fork yet**).
+- `main` is the only line that receives tags: `vX.Y.Z` (current `v1.1.0`, first release from this fork — see [Releases](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/releases)).
 - Urgent fixes to a released version: `hotfix/<slug>` → merge to `main` → tag the patch.
 - Publish a release only from `main`.
 

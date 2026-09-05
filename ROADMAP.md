@@ -35,7 +35,7 @@ The fork starts at `v1.0.0` (2026-08-02). Every milestone lives on its own branc
 | M4 | Licensing & third-party compliance — NOTICE.txt, license index, folder fixes | `docs/licensing` | **DONE** (2026-09-02) |
 | M5 | Roadmap & versioning governance — this file + VERSIONING.md | `docs/roadmap` | **DONE** (2026-09-03) |
 | M6 | Land the chat/drag revert (`ede57bf5`) so no milestone branch carries backed-out work | `fix/revert-drag-chat` | **CANCELLED** (2026-09-03) — superseded: `feature/daemon-commands` (the only branch carrying the backed-out work) was deleted, so nothing remains to revert on `main` |
-| M7 | First release from this fork — publish `v1.1.0` (`main` = tag + universal build + `MateEngineX-vX.Y.Z-macOS.zip` + DMG + GitHub Release, so README "Download & Usage" becomes true) | `main` (release) | **QUEUED** |
+| M7 | First release from this fork — publish `v1.1.0` (`main` = tag + universal build + `MateEngineX-vX.Y.Z-macOS.zip` + DMG + GitHub Release, so README "Download & Usage" becomes true) | `main` (release) | **DONE** (2026-09-05) — `v1.1.0` tagged at `2154a60c` (merge PR #8); `MateEngineX-v1.1.0-macOS.zip` + DMG published to [Releases](https://github.com/freckslaydown-byte/Mate-Engine-Mac-X/releases) |
 | M8 | Dance-along — pet hears a song it already "knows" and dances the matching choreography (fingerprint library ↔ VMD-derived Unity dance clips, auto-played in sync) | `feature/dance-along` | **QUEUED** — scoped as backlog items B7–B12 |
 
 ### Backlog (proposed, unstarted)
