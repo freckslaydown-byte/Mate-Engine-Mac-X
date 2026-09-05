@@ -36,6 +36,7 @@ The fork starts at `v1.0.0` (2026-08-02). Every milestone lives on its own branc
 | M5 | Roadmap & versioning governance — this file + VERSIONING.md | `docs/roadmap` | **DONE** (2026-09-03) |
 | M6 | Land the chat/drag revert (`ede57bf5`) so no milestone branch carries backed-out work | `fix/revert-drag-chat` | **CANCELLED** (2026-09-03) — superseded: `feature/daemon-commands` (the only branch carrying the backed-out work) was deleted, so nothing remains to revert on `main` |
 | M7 | First release from this fork — publish `v1.1.0` (`main` = tag + universal build + `MateEngineX-vX.Y.Z-macOS.zip` + DMG + GitHub Release, so README "Download & Usage" becomes true) | `main` (release) | **QUEUED** |
+| M8 | Dance-along — pet hears a song it already "knows" and dances the matching choreography (fingerprint library ↔ VMD-derived Unity dance clips, auto-played in sync) | `feature/dance-along` | **QUEUED** — scoped as backlog items B7–B12 |
 
 ### Backlog (proposed, unstarted)
 
@@ -47,6 +48,12 @@ The fork starts at `v1.0.0` (2026-08-02). Every milestone lives on its own branc
 | B4 | Upstream sync cadence — periodic merge from upstream master | Lineage |
 | B5 | Localization preservation pass — audit all 13 locale tables for completeness, QA the core flows (settings, chat, daemon, window controls) in JA + ZH, and stand up a feedback channel for those audiences | Use cases |
 | B6 | Pause all screen observation while the Mac is locked — cursor-pos, window-occlusion probe, and desktop capture (ambient lights) stop when `com.apple.screenIsLocked@` fires; resume on `screenIsUnlocked`; poll `CGSessionCopyCurrentDictionary()` as fallback. No new permissions. Daemon TTS command channel keeps working | macOS currency / privacy |
+| B7 | Daemon song library — `song_library.py`: ingest song sources (`yt-dlp` audio, local files) → chromaprint fingerprints (`fpcalc`) → `songs.jsonl` entries keyed by stable song ID | Advancing technology |
+| B8 | Daemon audio listening — `audio_ingest.py` HTTP endpoint receiving audio chunks; VAD gate so speech is not fingerprinted; sliding-window fingerprint match against the library; on match append a `dance` command (song ID) to `commands.jsonl` | Advancing technology |
+| B9 | Mac-side audio capture — mic capture path streamed to `audio_ingest` (reuse the existing `MacAudioMonitor`/native plugin surface where possible); system-audio capture for "pet hears what plays in the browser" deferred to a follow-up | Advancing technology |
+| B10 | Daemon → Custom Dance Player bridge — new `dance` command consumable by the familiar's existing poll loop → `CustomDancePlayer.AvatarDanceHandler.PlayByStableId(...)` (bundle already in `StreamingAssets/CustomDances`); single-instance first, `AvatarDanceSync` reuse later | Advancing technology |
+| B11 | VMD → Unity dance bundle pipeline — MMD bone map to VRM humanoid bones + converter to `AnimationClip`; editor-time bundle builder emitting the CustomDances `.unity3d` format (`[Dance].controller` + `.anim` + audio, validated by `MESDK`/VrmValidator); one-time per song | Advancing technology |
+| B12 | Dance-along sync + PoC — pass detected song-start offset / BPM with the dance command so playback begins on the downbeat; land the first curated song end-to-end (YouTube source + `.vmd`); document the curation workflow (sources, licenses, format) | Advancing technology / use cases |
 
 ### Backed-out changes (logged for history)
 
